@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste preview"
+  short_description: "Build a Figma-style preview page of STYLE.md and check it"
+policy:
+  allow_implicit_invocation: false

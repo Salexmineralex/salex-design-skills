@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste"
+  short_description: "Interview for taste, write STYLE.md and a judged preview, then restyle the app"
+policy:
+  allow_implicit_invocation: false

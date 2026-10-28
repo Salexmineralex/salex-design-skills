@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste judge"
+  short_description: "Three expert judges score a design and write a fix list"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste apply"
+  short_description: "Restyle the app to match STYLE.md and judge the real pages"
+policy:
+  allow_implicit_invocation: false

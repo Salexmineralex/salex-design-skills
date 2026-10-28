@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste brief"
+  short_description: "Interview about the look and the why, with an options page and moodboard"
+policy:
+  allow_implicit_invocation: false

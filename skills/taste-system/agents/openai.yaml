@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste system"
+  short_description: "Write STYLE.md with tokens, components and a reason for every rule"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste directions"
+  short_description: "Three design directions, one random, and ask which one you like most"
+policy:
+  allow_implicit_invocation: false
