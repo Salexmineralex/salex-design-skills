@@ -14,67 +14,63 @@ Needs Python 3 and Node (the screenshot helper uses Playwright, which downloads 
 
 ## `/taste`
 
-Gives a project its own taste, with a reason behind every choice. It runs the step skills below in order and owns the loop between judging and fixing.
+**`STYLE.md` is the product:** a handbook good enough to hand to a designer or another agent, so they know what to build and why.
 
-1. **Interviews you about the design only** (`/taste-brief`): which version of the idea, why, the feeling, references. Questions come as clickable prompts, and a vague idea ("retro", "cyberpunk") gets a visual menu of readings and a moodboard request.
-2. **Proposes three directions** (`/taste-directions`), one of them a wildcard built from random traits, each shown as a small real screen of your product, and **asks which one you like most**. The same prompt asks your pass mark (default 7) and how many judging rounds (default 5; 1 is light mode), with what each costs at worst (from about 40 minutes to about 2 hours).
-3. **Writes `STYLE.md`** (`/taste-system`): idea, DNA, moodboard, palette (contrast checked), typography, spacing, shape, motion, every component with its states, voice and CSS tokens, grounded in a design handbook (Refactoring UI, Bringhurst, Butterick, Albers, Müller-Brockmann, WCAG).
-4. **Builds `style/preview.html`** (`/taste-preview`), a Figma-like page with every token, component and state, plus typical screens at desktop and phone width.
-5. **Has three expert judges score it** (`/taste-judge`): typography and layout, color and accessibility, art direction. Each is calibrated against a described 5 and 8 for its area and compares the work with real strong examples. They look before they read, score alone, then read each other's reviews and give a final score, optionally on a different model. A screenshot check catches broken phone layouts, overflowing text and overlapping elements first, and an anti-slop check takes points off the average.
-6. **Learns from the judges' notes and redesigns** until they reach your pass mark. It reads every round, fixes what they agree on first, changes the approach when a problem keeps coming back, and writes each lesson into `STYLE.md` so later pages follow it.
-7. **Restyles your app** (`/taste-apply`) once you approve, and judges the real pages too. A big app goes in pieces: tokens and shared components first, a check with you, then groups of pages. With no app yet, the style becomes the foundation every later page follows.
+**The one rule:** every decision needs a why, measured against your original idea. Nothing is banned for its form. A gradient that carries an illustration is fine; the same gradient because it "looks modern" isn't. If a decision conflicts with your idea, your idea wins.
 
-Only you start it: type `/taste`, optionally with your idea. Say "light" for one quick judging round.
+**The order:** document first, design second. Nothing gets built until `STYLE.md` is finished, because a reason written after the design is an excuse.
 
-## What keeps it honest
+1. **Your idea** (`/taste-brief`): short, with its tension. If it's ambiguous, it asks for a mood board, or proposes one to pick from, and records concrete traits.
+2. **Two or three directions** (`/taste-directions`), shown as small real screens. You pick.
+3. **The handbook** (`/taste-why`): one decision at a time, each past an anti-slop reviewer that judges the reason and never the style.
+4. **The build:** one sample page, or your app if you ask, only from `STYLE.md`.
+5. **Measurement** (`/taste-validate`): objective checks and captures at 1440 and 375.
 
-These apply to every run:
+Only you start it: type `/taste`, optionally with your idea.
 
-- **Real assets.** It collects the product's own logo, images and screenshots into `style/assets/`. Whatever's missing becomes a clearly marked placeholder on an asset list for you. Never an empty card, never a CSS gradient pretending to be a picture.
-- **A hard gate.** Invented proof, dead controls, broken phone or tablet layouts, failing contrast, empty boxes and fake images block delivery whatever the score, with no waivers. `style/delivery.md` checks the final version, line by line.
-- **No recipes.** Values are chosen per project, and copied fingerprints from popular design skills cost points, as does never touching a default. Each screen is judged by its surface mode: persuade, operate, read or experience.
-- **Taste, not just filtering.** Dials set how bold it should be, bold choices are protected if they have a job, and a design nobody would remember can't score above 6.
-- **Anti-slop penalties.** `slop-check.sh` looks for the marks of generic AI design on the rendered page, and the penalty (at most 3) comes off the judges' average. The pass mark applies to what's left.
+## What's in `STYLE.md`
 
-  | Rule | Penalty |
-  |---|---|
-  | Gradient faking an image, empty box, purple or violet gradient, emoji icons, invented "Step 01" sequences, changed content, off-brand values | 1 each |
-  | Identical rounded text cards, stock marketing phrases, fashionable default fonts with no reason | 0.5 each |
+The idea and its tension, the principles that follow from it, then an entry per decision, then tokens as the last mechanical section:
 
-  A 0.5 rule alone costs nothing; two or more kinds do. A waiver needs a reason tied to the product, written in the brief. A brand's own values are never penalized.
-- **Less self-validation.** The judges are usually the same model that designed the page, so they look at the work before reading its explanation, compare it with real examples in `style/references/`, can run on a different model, can't remove the penalty, and cap at 5 anything worse than what it replaces.
+```md
+### D1. Serif text on warm paper
+- **Decision:** what it is, with values.
+- **Why:** the problem it solves, tied to your idea.
+- **Instead of:** the obvious alternative, and why not.
+- **Breaks if removed:** what goes wrong without it.
+- **Trade-off:** what this costs, accepted.
+- **Source:** brief | moodboard <file> | user answer Q1 | brand <file> | handbook <rule>
+- **Reviewed:** kept
+```
+
+`why-lint.py` checks the form before anything is built, including that every token names its decision.
+
+## When it asks you
+
+If a why can't be answered from the brief, your idea or the mood board, it asks instead of inventing one: one specific question about one decision, with the options and what each costs, at most three in a project. Your answer goes into `STYLE.md` as the source of that decision. If it would need more, the brief is empty, and it goes back to that.
+
+## How results are judged
+
+No single score and no pass mark.
+
+1. **Measurement disqualifies.** Contrast, type scale, typefaces, line length, touch targets, overflow, spacing, image and text, and whether the page matches `STYLE.md`. A FAIL is a FAIL.
+2. **A judge on another model** can break ties, if one is available. It sees the result blind, then checks whether each written reason is honest or an excuse. It never sets a score.
+3. **People decide.** For a redesign, show three people the before and after without saying which is new. The tool doesn't run or store a vote; that's yours to do.
 
 ## Brand mode: `/taste --brand`
 
-For a product whose brand is already good. A new identity on a polished brand usually comes out worse, so this mode keeps it:
+For a product whose look you want to keep. It reads your style doc, your code and your rendered pages directly with `read-tokens.sh` (colors, greys, every border side, states, elevation, radii) and writes the handbook into your existing doc, or creates one. Problems a page already has aren't inherited: they still fail until they're fixed.
 
-```
-/taste --brand
-```
+## The skills
 
-1. **Extracts the design system** (`/taste-extract`) from your actual code, your `DESIGN.md` or `STYLE.md` and any files you give: colors, type, spacing, components and imagery style go into a `## Locked` section, which later steps and judges can't change. An existing doc is kept and updated; with none, one is created from your actual design. Where sources disagree, it locks what's really built and asks you about the conflict.
-2. **Collects the brand's real assets** and writes `style/audit.md`: accessibility failures and inconsistencies, each with a fix inside the brand. You choose which to make.
-3. **Builds fixes and new screens** with locked values, plus any `## Extensions` that say why they're needed. The preview shows before and after.
-4. **Scores brand fidelity instead of originality:** a brand fidelity judge compares the work side by side with the brand's own pages. Off-brand colors and fonts cost points.
-5. **Changes only what you approved** in the app. No restyle.
+Each works on its own. They hand over through files.
 
-`/taste` also recommends this mode when it sees a project that already has a strong identity.
-
-**If a run stops** (a usage limit, a closed session), type `/taste` again: it keeps a progress log in `style/brief.md`, checks it against the files, and offers to continue from the next step.
-
-## The step skills
-
-Each one also works on its own. They hand over through files, so you can stop after any step and pick up later.
-
-| Skill | Does | Reads | Writes |
-|---|---|---|---|
-| `/taste-extract` | Locks an existing brand, collects its assets, audits it | your code, style doc and files | `## Locked` in `STYLE.md`, `style/assets/`, `style/audit.md` |
-| `/taste-brief` | Interview, options page, moodboard, assets, reference anchors | the project | `style/brief.md`, `style/options.html`, `style/assets/`, `style/references/` |
-| `/taste-directions` | Three directions, asks which you like most | `style/brief.md` | `style/directions.html`, the pick in the brief |
-| `/taste-system` | The style guide | the brief | `STYLE.md` |
-| `/taste-preview` | The preview page, checked with screenshots | `STYLE.md` | `style/preview.html` |
-| `/taste-judge` | Three judges and the anti-slop check score any design and write a fix list. Only reports, changes nothing | any page, the preview or the app | `style/judging/round-<n>.md` |
-| `/taste-apply` | Restyles the app, judges it, fixes what the judges find | `STYLE.md` | the app's styling |
+| Skill | Does | Writes |
+|---|---|---|
+| `/taste-brief` | The idea and its tension, a mood board if ambiguous, brand tokens in brand mode | `style/brief.md`, `style/references/`, `style/assets/` |
+| `/taste-directions` | Two or three directions, and asks which you like most | `style/directions.html` |
+| `/taste-why` | Writes the handbook, with the reviewer on every decision | `STYLE.md` |
+| `/taste-validate` | Measures any page and captures it | `style/validate/<page>/` |
 
 ## Developing
 
@@ -93,8 +89,8 @@ skills/<name>/
   scripts/            copies of shared/scripts it needs
   agents/             metadata for other agent tools
 shared/
-  references/         design handbook, judges guide, anti-slop checklist, assets guide
-  scripts/            contrast checker, random traits, screenshots, brand extractor, slop check
+  references/         design handbook, assets guide
+  scripts/            contrast checker, screenshots, token reader, handbook lint, page measurement
 scripts/sync-shared.sh  copies shared/ into each skill
 scripts/test-scripts.sh smoke-tests shared/scripts against tests/fixtures
 tests/fixtures/       pages the smoke test runs on

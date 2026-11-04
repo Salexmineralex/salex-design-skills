@@ -1,5 +1,5 @@
 interface:
   display_name: "Taste brief"
-  short_description: "Interview about the look and the why, with an options page and moodboard"
+  short_description: "Pin down the idea and its tension, with a mood board when it's ambiguous"
 policy:
   allow_implicit_invocation: false

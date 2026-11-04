@@ -8,13 +8,10 @@ cd "$(dirname "$0")/.."
 
 # skill: the shared files it needs
 manifest="
-taste-extract:    references/handbook.md references/assets.md scripts/extract.sh scripts/contrast.py scripts/screenshot.sh
-taste-brief:      references/handbook.md references/anti-slop.md references/assets.md scripts/extract.sh scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
-taste-directions: references/handbook.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/roll.py
-taste-system:     references/handbook.md references/anti-slop.md scripts/contrast.py
-taste-preview:    references/handbook.md references/anti-slop.md references/assets.md scripts/screenshot.sh scripts/slop-check.sh
-taste-judge:      references/handbook.md references/judges.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
-taste-apply:      references/handbook.md references/judges.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
+taste-brief:      references/handbook.md references/assets.md scripts/read-tokens.sh scripts/contrast.py scripts/screenshot.sh
+taste-directions: references/handbook.md references/assets.md scripts/contrast.py scripts/screenshot.sh
+taste-why:        references/handbook.md scripts/why-lint.py scripts/contrast.py
+taste-validate:   scripts/validate.sh scripts/why-lint.py scripts/screenshot.sh
 "
 
 check=0

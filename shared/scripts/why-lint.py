@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Check that a STYLE.md is a finished handbook before anything is built from it.
+
+Usage: python3 why-lint.py STYLE.md
+
+It reads the form, not the taste: the sections are in order, every decision has its
+reason, source and trade-off, none rests on fashion, nothing is unresolved, no more
+than three questions went to the user, and every token traces to a decision.
+
+Prints one line per problem. Exits 1 if there are any, 0 if the handbook is finished.
+"""
+import re
+import sys
+
+SECTIONS = ["Idea", "Principles", "Decisions", "Tokens"]
+FIELDS = ["Decision", "Why", "Instead of", "Breaks if removed", "Trade-off", "Source", "Reviewed"]
+SOURCES = r"^(brief|idea|moodboard|mood board|user answer|brand|handbook)\b"
+FASHION = re.compile(
+    r"\b(looks? (modern|clean|sleek|nice|good|premium|professional)|feels? (modern|clean|sleek|premium)"
+    r"|it'?s modern|on[- ]trend|trendy|everyone|everybody|popular|industry standard|best practice"
+    r"|what (people|users) expect|standard for|common pattern|contemporary)\b",
+    re.I,
+)
+MIN_WHY_WORDS = 10
+MAX_QUESTIONS = 3
+
+
+def sections(text):
+    found = {}
+    order = []
+    current = None
+    for line in text.splitlines():
+        m = re.match(r"^## (.+?)\s*$", line)
+        if m:
+            current = m.group(1)
+            order.append(current)
+            found[current] = []
+        elif current:
+            found[current].append(line)
+    return order, {k: "\n".join(v) for k, v in found.items()}
+
+
+def check(text):
+    problems = []
+    order, body = sections(text)
+    positions = []
+    for name in SECTIONS:
+        if name not in order:
+            problems.append(f"missing section: ## {name}")
+        else:
+            positions.append(order.index(name))
+    if positions != sorted(positions):
+        problems.append("sections out of order: " + " > ".join(SECTIONS))
+    if order and "Tokens" in order and order[-1] != "Tokens":
+        problems.append("## Tokens must be the last section")
+
+    ids = set()
+    entries = re.split(r"^### ", body.get("Decisions", ""), flags=re.M)[1:]
+    if "Decisions" in body and not entries:
+        problems.append("## Decisions has no entries (### D1. ...)")
+    for entry in entries:
+        title = entry.splitlines()[0].strip()
+        m = re.match(r"D(\d+)\b", title)
+        if not m:
+            problems.append(f'decision "{title}" needs a number, like "### D1. {title}"')
+        else:
+            ids.add(m.group(1))
+        fields = dict(
+            (k.strip(), v.strip())
+            for k, v in re.findall(r"^- \*\*(.+?):\*\*(.*)$", entry, flags=re.M)
+        )
+        for field in FIELDS:
+            if not fields.get(field):
+                problems.append(f"{title}: missing {field}")
+        why = fields.get("Why", "")
+        if why:
+            hit = FASHION.search(why)
+            if hit:
+                problems.append(f'{title}: Why rests on fashion ("{hit.group(0)}"); give the reason it serves the idea')
+            elif len(why.split()) < MIN_WHY_WORDS:
+                problems.append(f"{title}: Why is too short to be a reason ({len(why.split())} words)")
+        source = fields.get("Source", "")
+        if source and not re.match(SOURCES, source, flags=re.I):
+            problems.append(f"{title}: Source must be the brief, the moodboard, a user answer, the brand or the handbook")
+        reviewed = fields.get("Reviewed", "").lower()
+        if reviewed and not reviewed.startswith("kept"):
+            problems.append(f"{title}: unresolved; ask the user or go back to the brief before building")
+        if "unresolved" in why.lower():
+            problems.append(f"{title}: Why is unresolved")
+
+    questions = re.findall(r"^- \*\*Q\d+", body.get("Questions asked", ""), flags=re.M)
+    if len(questions) > MAX_QUESTIONS:
+        problems.append(f"{len(questions)} questions asked; the limit is {MAX_QUESTIONS}. The brief is empty: go back to it")
+
+    tokens = 0
+    for line in body.get("Tokens", "").splitlines():
+        m = re.match(r"\s*(--[\w-]+)\s*:", line)
+        if not m:
+            continue
+        tokens += 1
+        ref = re.search(r"/\*\s*(?:D(\d+)|brand)\b", line)
+        if not ref:
+            problems.append(f"token {m.group(1)} doesn't name its decision (/* D1 */ or /* brand */)")
+        elif ref.group(1) and ref.group(1) not in ids:
+            problems.append(f"token {m.group(1)} names D{ref.group(1)}, which doesn't exist")
+    if "Tokens" in body and not tokens:
+        problems.append("## Tokens has no CSS custom properties")
+    return problems
+
+
+def main():
+    if len(sys.argv) != 2:
+        print(__doc__)
+        return 2
+    with open(sys.argv[1], encoding="utf-8") as f:
+        problems = check(f.read())
+    for p in problems:
+        print(p)
+    if problems:
+        return 1
+    print("handbook is finished")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

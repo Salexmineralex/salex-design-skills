@@ -15,44 +15,54 @@ check() { # check <name> <command that must succeed>
 
 check "contrast: passing pair exits 0" "python3 $s/contrast.py '#12304a:#f6efe3'"
 check "contrast: failing pair exits 1" "! python3 $s/contrast.py '#ddd:#fff'"
-check "roll: prints traits" "python3 $s/roll.py --seed 1 | grep -q ."
 check "screenshot: captures a page" "bash $s/screenshot.sh $f/brand.html $tmp/shot.png 375 && test -s $tmp/shot.png"
 
-bash $s/extract.sh $f/brand.html "$tmp/x" >"$tmp/extract.log" 2>&1
-check "extract: runs" "test -s $tmp/x/extract.json && test -s $tmp/x/page-1440.png && test -s $tmp/x/page-375.png"
-check "extract: reads the colors" "grep -q '#c8412b' $tmp/x/extract.json"
-check "extract: reads the font" "grep -q Georgia $tmp/x/extract.json"
-check "extract: reads CSS variables" "grep -q harbor-coral $tmp/x/extract.json"
-check "extract: finds the logo" "grep -q '\"kind\": \"logo\"' $tmp/x/assets.json"
-check "extract: a photo isn't a logo" "test \$(grep -c '\"kind\": \"logo\"' $tmp/x/assets.json) = 1"
-check "extract: strips scripts from SVGs" "! grep -lE '<script|onclick' $tmp/x/assets/*.svg"
+check "why-lint: a finished handbook passes" "python3 $s/why-lint.py $f/good-STYLE.md"
+python3 $s/why-lint.py $f/bad-STYLE.md >"$tmp/lint.txt" 2>&1; code=$?
+check "why-lint: an unfinished one exits 1" "test $code = 1"
+check "why-lint: catches a fashion reason" "grep -q 'rests on fashion' $tmp/lint.txt"
+check "why-lint: catches an unresolved decision" "grep -q 'unresolved' $tmp/lint.txt"
+check "why-lint: catches tokens not last" "grep -q 'must be the last' $tmp/lint.txt"
+check "why-lint: catches a missing number" "grep -q 'needs a number' $tmp/lint.txt"
 
-bash $s/slop-check.sh $f/sloppy.html >"$tmp/sloppy.txt" 2>&1; code=$?
-check "slop: sloppy page exits 1" "test $code = 1"
-for rule in violet-gradient fake-visual empty-card emoji-icon invented-steps filler-copy generic-card-grid trendy-font; do
-  check "slop: catches $rule" "grep -q '^$rule:' $tmp/sloppy.txt"
-done
-check "slop: penalty is capped at 3" "grep -q '^Penalty: 3$' $tmp/sloppy.txt"
-check "slop: sloppy page fails the hard gate" "grep -q '^Hard gate: FAIL' $tmp/sloppy.txt"
-check "slop: --allow can't waive the hard gate" "bash $s/slop-check.sh $f/sloppy.html --allow empty-card | grep -q '^empty-card:'"
-check "slop: one soft rule alone costs nothing" "bash $s/slop-check.sh $f/one-tell.html | grep -q '^Penalty: 0$'"
-bash $s/slop-check.sh $f/defaults.html >"$tmp/def.txt" 2>&1
-for rule in gradient-text nested-card icon-tile all-centered default-type-scale generator-trace recipe-fingerprint; do
-  check "slop: catches $rule" "grep -q '^$rule:' $tmp/def.txt"
-done
-check "slop: --allow removes a rule" "! bash $s/slop-check.sh $f/sloppy.html --allow trendy-font | grep -q '^trendy-font:'"
+bash $s/read-tokens.sh $f/brand.html "$tmp/x" >"$tmp/read.log" 2>&1
+check "read-tokens: runs" "test -s $tmp/x/tokens.json && test -s $tmp/x/page-1440.png && test -s $tmp/x/page-375.png"
+check "read-tokens: reads colors and font" "grep -q '#c8412b' $tmp/x/tokens.json && grep -q Georgia $tmp/x/tokens.json"
+check "read-tokens: reads CSS variables" "grep -q harbor-coral $tmp/x/tokens.json"
+check "read-tokens: reads a border on any side" "grep -q '#a8a29a' $tmp/x/tokens.json"
+check "read-tokens: lists greys apart" "python3 -c \"import json;assert '#a8a29a' in json.load(open('$tmp/x/tokens.json'))['greys']\""
+check "read-tokens: reads hover states" "grep -q '#9e3220' $tmp/x/tokens.json"
+check "read-tokens: reads elevation and radii" "grep -q '\"elevation\"' $tmp/x/tokens.json && grep -q '2px' $tmp/x/tokens.json"
+check "read-tokens: finds the logo, not the photo" "test \$(grep -c '\"kind\": \"logo\"' $tmp/x/assets.json) = 1"
+check "read-tokens: strips scripts from SVGs" "! grep -lE '<script|onclick' $tmp/x/assets/*.svg"
 
-check "slop: layers and picture cards aren't flagged" "! bash $s/slop-check.sh $f/layers.html | grep -E '^(empty-card|fake-visual|generic-card-grid):'"
-check "slop: a violet layer is still flagged" "bash $s/slop-check.sh $f/layers.html | grep -q '^violet-gradient:'"
-check "slop: a source's own violet gradient isn't slop" "! bash $s/slop-check.sh $f/layers.html --source $f/layers.html | grep -q violet"
-check "slop: real brand page is clean" "bash $s/slop-check.sh $f/brand.html"
-bash $s/slop-check.sh $f/in-brand.html --source $f/brand.html --locked $f/STYLE-locked.md >"$tmp/in.txt" 2>&1; code=$?
-check "slop: in-brand page lists its placeholder" "grep -q '^placeholder' $tmp/in.txt"
-check "slop: in-brand page has no penalty" "grep -q '^Penalty: 0$' $tmp/in.txt"
-bash $s/slop-check.sh $f/off-brand.html --source $f/brand.html --locked $f/STYLE-locked.md >"$tmp/off.txt" 2>&1
-check "slop: catches off-brand color" "grep -q '^off-brand: color #0a7cff' $tmp/off.txt"
-check "slop: catches off-brand font" "grep -q '^off-brand: font \"fraunces\"' $tmp/off.txt"
-check "slop: catches changed content" "grep -q '^content-changed:' $tmp/off.txt"
+bash $s/validate.sh $f/sloppy.html "$tmp/v1" >"$tmp/sloppy.txt" 2>&1; code=$?
+check "validate: sloppy page exits 1" "test $code = 1"
+check "validate: writes captures and a report" "test -s $tmp/v1/page-1440.png && test -s $tmp/v1/page-375.png && test -s $tmp/v1/report.md"
+for rule in contrast typefaces line-length touch-target sideways-scroll empty-box focus; do
+  check "validate: catches $rule" "grep -q '^FAIL $rule:' $tmp/sloppy.txt"
+done
+check "validate: gives no score" "! grep -qiE 'penalty|score' $tmp/sloppy.txt"
+
+touch $f/good-page.html
+bash $s/validate.sh $f/good-page.html "$tmp/v2" --style $f/good-STYLE.md >"$tmp/good.txt" 2>&1; code=$?
+check "validate: a page built from its handbook passes" "test $code = 0"
+check "validate: the brand's own border isn't off-token" "! grep -q 'off-token' $tmp/good.txt"
+
+bash $s/validate.sh $f/good-page.html "$tmp/v3" --source $f/source-menu.html >"$tmp/menu.txt" 2>&1
+check "bug: a nav behind a mobile menu isn't missing" "! grep -qE '^FAIL text-(removed|hidden)' $tmp/menu.txt"
+check "bug: replacing an emoji isn't a text change" "! grep -qE '^FAIL text-' $tmp/menu.txt"
+check "bug: replacing an emoji is an improvement" "grep -q '^INFO better:.*emoji replaced by drawn icons' $tmp/menu.txt"
+
+bash $s/validate.sh $f/sloppy.html "$tmp/v4" --source $f/sloppy.html >"$tmp/inherit.txt" 2>&1; code=$?
+check "bug: a sloppy source's problems still fail" "test $code = 1 && grep -q 'also in the source' $tmp/inherit.txt"
+
+bash $s/validate.sh $f/sloppy.html "$tmp/v5" --style $f/good-STYLE.md >"$tmp/off.txt" 2>&1
+check "validate: catches an off-token color" "grep -q '^FAIL off-token: color' $tmp/off.txt"
+check "validate: a pattern with no decision is unreasoned" "grep -q '^FAIL unreasoned:.*gradient' $tmp/off.txt"
+check "validate: refuses an unfinished handbook" "bash $s/validate.sh $f/good-page.html $tmp/v6 --style $f/bad-STYLE.md | grep -q '^FAIL style-lint'"
+cp $f/good-page.html $f/brand-logo.svg $f/brand-photo.svg "$tmp/"; touch -t 200001010000 "$tmp/good-page.html"
+check "validate: refuses a handbook newer than the build" "bash $s/validate.sh $tmp/good-page.html $tmp/v7 --style $f/good-STYLE.md | grep -q '^FAIL style-after-build'"
 
 check "sync: skill copies match shared/" "scripts/sync-shared.sh --check"
 

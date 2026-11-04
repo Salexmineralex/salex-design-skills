@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste validate"
+  short_description: "Measure a page and capture it at 1440 and 375 wide"
+policy:
+  allow_implicit_invocation: false

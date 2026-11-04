@@ -2,13 +2,13 @@
 
 Most of what makes a page feel real is what's in it: the logo, the product, the photos. A style shown with empty cards or gradient blobs tells nobody anything, and it's the first thing that makes a design look fake.
 
-**Two rules, in every mode: never an empty card, and never a CSS gradient or a drawn shape faking a photo, a product shot or an illustration.** (`scripts/slop-check.sh` catches both.)
+**Two rules, in every mode: never an empty card, and never a CSS gradient or a drawn shape faking a photo, a product shot or an illustration.** (`scripts/validate.sh` reports empty boxes; a gradient needs a decision in `STYLE.md` that gives its job.)
 
 ## Where assets come from, best first
 
 1. **What the user supplies:** files they give you or point to.
 2. **The repo:** `assets/`, `public/`, `static/`, `images/`, favicons, app icons.
-3. **The product's live site:** `scripts/extract.sh <url> <out-dir>` saves its logos, images and illustrations.
+3. **The product's live site:** `scripts/read-tokens.sh <url> <out-dir>` saves its logos, images and illustrations.
 4. **Real screenshots of the product**, taken with `scripts/screenshot.sh`, when the product already runs.
 5. **Simple drawings in the style**, only when the style itself calls for illustration and only for things that truly are illustrations: map islands, icons, diagrams. A drawing can't pretend to be a photo or a screenshot.
 6. **A marked placeholder**, when none of those has it. Never skip to invented imagery.

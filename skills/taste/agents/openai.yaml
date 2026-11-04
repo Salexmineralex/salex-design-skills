@@ -1,5 +1,5 @@
 interface:
   display_name: "Taste"
-  short_description: "Interview for taste, write STYLE.md and a judged preview, then restyle the app"
+  short_description: "Write STYLE.md as a handbook with a reason for every decision, then build and measure"
 policy:
   allow_implicit_invocation: false

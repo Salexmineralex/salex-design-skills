@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste why"
+  short_description: "Write STYLE.md with a reviewer checking the reason for each decision"
+policy:
+  allow_implicit_invocation: false
