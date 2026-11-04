@@ -1,6 +1,6 @@
 ---
 name: taste
-description: Give a project its own taste. Interview me about the idea and the why behind it, ask for a moodboard when the idea is unclear, propose three directions (one deliberately random) and ask which I like most, then write STYLE.md (idea, moodboard, palette, typography, components, rules grounded in design handbooks) and a Figma-style preview page. Three expert judges score it; it learns from their notes and redesigns until they reach my pass mark (default 7, up to 5 rounds, or one quick round in light mode). Once I approve, the whole app is restyled to match. If STYLE.md or DESIGN.md already exists, redesign from it. For a product with a brand worth keeping, /taste --brand <url or files> locks the existing design system instead, then audits it, fixes it and builds new screens in-brand, scored on brand fidelity.
+description: Give a project its own taste. Interview me about the idea and the why behind it, ask for a moodboard when the idea is unclear, propose three directions (one deliberately random) and ask which I like most, then write STYLE.md (idea, moodboard, palette, typography, components, rules grounded in design handbooks) and a Figma-style preview page. Three expert judges score it; it learns from their notes and redesigns until they reach my pass mark (default 7, up to 5 rounds, or one quick round in light mode). Once I approve, the whole app is restyled to match. If STYLE.md or DESIGN.md already exists, redesign from it. For a product with a brand worth keeping, /taste --brand locks the existing design system instead, then audits it, fixes it and builds new screens in-brand, scored on brand fidelity.
 disable-model-invocation: true
 ---
 
@@ -25,12 +25,12 @@ This skill conducts seven step skills, each of which also works on its own. It r
 ## Three things every run does
 
 - **Real assets.** Everything is built with the product's real logo, images and words, collected into `style/assets/`. What's missing becomes a marked placeholder on an asset list for the user. Never an empty card, never a gradient faking an image.
-- **Anti-slop.** `slop-check.sh` looks for the marks of generic AI design, and its penalty comes off the judges' average. The pass mark applies to what's left.
+- **Taste without slop.** Three kinds of rule (`references/anti-slop.md`): a hard gate that blocks delivery, techniques that need a reason, and quality the judges weigh. And clean isn't enough: dials set how bold it is, bold choices are protected, and a design nobody would remember can't score above 6.
 - **Judges who aren't just agreeing with themselves.** They look before they read, compare with real strong examples in `style/references/`, and can run on a different model.
 
 ## Brand mode
 
-Use it when the user says `--brand`, passes a URL or files with "keep our brand", or chooses it when `taste-brief` recommends it. A polished brand doesn't need a new identity: a redesign usually comes out worse, with less product and more decoration. So the deliverable changes from a new style to an audit, fixes and extensions, and the run changes like this:
+Use it when the user says `--brand` (it reads the code and any existing style doc, plus any files they give), says "keep our brand", or chooses it when `taste-brief` recommends it. A polished brand doesn't need a new identity: a redesign usually comes out worse, with less product and more decoration. So the deliverable changes from a new style to an audit, fixes and extensions, and the run changes like this:
 
 | Step | In brand mode |
 |---|---|
@@ -113,7 +113,7 @@ These are worst cases, without the app restyle itself (which depends on the app'
 
 ### Asking
 
-At the start, say in one line which mode you're running and its worst case, and that you'll confirm it later ("Running thorough mode: pass mark 7, up to 5 judging rounds, up to about 2 hours. Say 'light' for about 40 minutes; I'll confirm the settings when you pick a direction."). If the user said "light", "quick", "fast" or "cheap", or gave a mark or a number of rounds, use what they said.
+After any pushback in the opening message, say in one line which mode you're running and its worst case, and that you'll confirm it later ("Running thorough mode: pass mark 7, up to 5 judging rounds, up to about 2 hours. Say 'light' for about 40 minutes; I'll confirm the settings when you pick a direction."). If the user said "light", "quick", "fast" or "cheap", or gave a mark or a number of rounds, use what they said.
 
 Otherwise ask, but don't add a prompt for it: put three questions into the same prompt as step 2's "Which direction do you like most?", right before the expensive part starts. If the direction was picked with an inline button instead of the prompt, ask these three in a prompt of their own right after the pick. In brand mode there's no direction question, so they get their own prompt after the brief. Put the cost in the descriptions, so it's a real choice:
 
@@ -136,7 +136,7 @@ Mode: <thorough | light>. Brand mode: <yes | no>. Pass mark: <p>. Most rounds: <
 3. **Style.** Follow `taste-system`.
 4. **Preview.** Follow `taste-preview`.
 5. **Judge, learn, redesign.** Follow `taste-judge` with the settings, then act on its notes as "Learn from the judges" says. Repeat until the final score reaches the pass mark or the most rounds are used. Don't ask the user between rounds: judging and redesigning are part of this skill.
-6. **Show the user and iterate.** Open the preview (`open style/preview.html` on macOS, `xdg-open` on Linux) and tell the user where it is, with every round's scores, penalties and what changed because of the judges, plus the assets still needed (`## Needed` in `style/assets/assets.md`). Ask what feels off. Translate vague feedback into design terms before changing anything: "too boring" might mean too little contrast, too even a type scale or no signature move. Say which one you think it is, change `STYLE.md` through `taste-system`, rebuild through `taste-preview`, and judge again (step 5), so the user never sees a version below the pass mark. Repeat until the user approves the style.
+6. **Delivery gate, then show the user.** Write `style/delivery.md` as `taste-apply` describes, on the final preview: one pass or fail line per hard-gate rule, with evidence, and the fixes made since the last round. Any FAIL gets fixed first; if those fixes added or redrew artwork or changed layout, judge once more. Then open the preview (`open style/preview.html` on macOS, `xdg-open` on Linux) and tell the user where it is, with every round's scores, penalties and what changed because of the judges, plus the assets still needed (`## Needed` in `style/assets/assets.md`). Ask what feels off. Translate vague feedback into design terms before changing anything: "too boring" might mean too little contrast, too even a type scale or no signature move. Say which one you think it is, change `STYLE.md` through `taste-system`, rebuild through `taste-preview`, and judge again (step 5), so the user never sees a version below the pass mark. Repeat until the user approves the style.
 7. **Restyle the app** (in brand mode, make the approved fixes and new screens). Once the user approves, follow `taste-apply` with the settings. If there's no app yet, skip this and say so: the style is the foundation every later page follows.
 
 ## Learn from the judges
@@ -148,10 +148,11 @@ Mode: <thorough | light>. Brand mode: <yes | no>. Pass mark: <p>. Most rounds: <
 3. **Settle a trade-off once.** Fresh judges don't know what earlier rounds decided, so a settled question comes back every round (in one test the red X on book covers flip-flopped for three rounds). When you settle one, add it to `## Fixed decisions` in `style/brief.md` as "Settled: <the choice>, because <the brief's reason>". Judges get the fixed decisions, so later rounds work within it instead of reopening it.
 4. **A problem that comes back in a later round means the fix didn't work.** Don't nudge the same value again: find the cause and change the approach (in one run, the dark keys' travel kept showing a ghost line for three rounds until the two layers became one slab with one outline). Write the lesson into `STYLE.md`'s `## Do and don't`, so the app restyle and every later page follow it.
 5. **Slop findings are fixes like any other,** unless the brief waives them with a reason. Don't waive a rule to reach the pass mark: a waiver needs a reason tied to the product, and you tell the user about each one.
-6. **Passing doesn't end the round's work, and doesn't restart the loop either.** After a passing round, make the fixes the judges listed without a new round when each one adjusts a value, a token or a component, or repairs a bug (a misaligned button, a missing state, a contrast pair a shade too light, a color used in one place too many). Only a change to the idea itself means judging again: a new font, a new palette, or a new signature move. After those fixes, rerun the screenshot and slop checks, and tell the user the score is for the version before them. Otherwise a passing run never stops, because judges always list something.
-7. **Never let the judges overrule the user.** A fix that breaks a fixed decision or a locked value isn't made; find another one, or tell the user at the end.
-8. **Light mode:** one round only. Make the quick fixes, then show the user the scores, with the bigger changes as options.
-9. **Out of rounds and still below the mark:** stop and show the user every round's scores and the problems that keep coming back. Usually that means the brief has a conflict only the user can settle.
+6. **Bland isn't fixed by more filtering.** If the judges can't name anything memorable, go back to the dials and the signature move.
+7. **Passing doesn't end the round's work, and doesn't restart the loop either.** After a passing round, make the fixes the judges listed without a new round when each one adjusts a value, a token or a component, or repairs a bug (a misaligned button, a missing state, a contrast pair a shade too light, a color used in one place too many). Only a change to the idea itself means judging again: a new font, a new palette, or a new signature move. The delivery gate then covers those fixes; tell the user the score is for the version before them. Otherwise a passing run never stops, because judges always list something.
+8. **Never let the judges overrule the user.** A fix that breaks a fixed decision or a locked value isn't made; find another one, or tell the user at the end.
+9. **Light mode:** one round only. Make the quick fixes, then show the user the scores, with the bigger changes as options.
+10. **Out of rounds and still below the mark:** stop and show the user every round's scores and the problems that keep coming back. Usually that means the brief has a conflict only the user can settle.
 
 ## Clean up
 

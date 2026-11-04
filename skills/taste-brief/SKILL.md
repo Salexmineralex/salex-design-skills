@@ -84,6 +84,27 @@ If they can't or won't send images, go on with their words and their pick from t
 
 Look at every image. Write down what they share: the palette, contrast, textures, type, shapes, density and era. Tell the user what you see ("All five are warm, grainy and hand-printed, but three are busy and two are very calm. Which way?") so they can correct you.
 
+## Surface modes
+
+Name what kind of surface each main screen is, because it decides how much ambition it gets. Judge a screen by its own mode:
+
+- **Persuade** (landing, marketing, pricing): the design is part of the pitch, so it can be loud.
+- **Operate** (apps, dashboards, forms): precision and restraint; the theme stays at the edges.
+- **Read** (docs, articles, chapters): structure and comfort for long reading.
+- **Experience** (portfolios, games, galleries): the work leads, and rules bend for it.
+
+This works beyond the web: an app, a deck or a poster has a mode too. Where `slop-check.sh` can't run, use screenshots and the judges, and check the same rules by eye.
+
+## Direction dials
+
+From the answers, set three dials and write them in the brief. They say how loud the design should be, so a calm result is chosen rather than accidental:
+
+- **Energy:** 1 calm, 2 balanced, 3 bold.
+- **Rhythm:** 1 even, 2 steady with breaks, 3 varied.
+- **Motion:** 1 hover only, 2 transitions and reveals, 3 choreographed.
+
+Fit them to the idea, the users and the surface mode, not to caution: don't default to 1 to be safe. Show them in one line with the directions, so the user can correct them. In brand mode, read them from the brand instead.
+
 ## Reference anchors
 
 The judges compare the work with real examples. Collect them once the reading of the idea is known, not before, and stop at 4 good ones or 8 attempts: a weak anchor is worse than none. Take the references the user loved, if they're online, plus two or three strong products in the same field, and screenshot each one: `scripts/screenshot.sh <url> style/references/<name>-1440.png 1440`. List them in `style/references/references.md`, with what each one is and why it's a good example. A site that refuses is skipped. Don't ask the user for this unless they named references you can't reach.
@@ -115,6 +136,12 @@ Moodboard: <what the images share, or "no images">
 
 ## Must-haves
 Brand colors, logo, light/dark, platforms, accessibility.
+
+## Surface modes
+<screen>: <mode>
+
+## Dials
+Energy <1-3>, rhythm <1-3>, motion <1-3>, and why.
 
 ## Fixed decisions
 Choices the user made explicitly. Later steps and the judges never change these.

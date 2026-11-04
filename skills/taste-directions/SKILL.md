@@ -26,7 +26,7 @@ Every direction must respect the brief's must-haves and fixed decisions.
 
 **Avoid the first thing that comes to mind.** Directions drift toward whatever is in fashion (a serif headline with one violet accent, a neutral grotesk on off-white). Write down the default look for this kind of product, and make sure no direction is that look without a reason from the brief. No two directions may share a type pairing or a main hue.
 
-For each one give: a name, a short paragraph that paints the picture, a 5-color palette (hex, with the main text pair checked by `scripts/contrast.py`), a type pairing, the **signature move** (the one thing people will remember), and why it fits the user's answers.
+For each one give: a name, a short paragraph that paints the picture, a 5-color palette (hex, with the main text pair checked by `scripts/contrast.py`), a type pairing, the **signature move** (the one thing people will remember), its dials if they differ from the brief, and why it fits the user's answers.
 
 ## Show them
 

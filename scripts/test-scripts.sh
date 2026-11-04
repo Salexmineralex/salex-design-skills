@@ -33,6 +33,13 @@ for rule in violet-gradient fake-visual empty-card emoji-icon invented-steps fil
   check "slop: catches $rule" "grep -q '^$rule:' $tmp/sloppy.txt"
 done
 check "slop: penalty is capped at 3" "grep -q '^Penalty: 3$' $tmp/sloppy.txt"
+check "slop: sloppy page fails the hard gate" "grep -q '^Hard gate: FAIL' $tmp/sloppy.txt"
+check "slop: --allow can't waive the hard gate" "bash $s/slop-check.sh $f/sloppy.html --allow empty-card | grep -q '^empty-card:'"
+check "slop: one soft rule alone costs nothing" "bash $s/slop-check.sh $f/one-tell.html | grep -q '^Penalty: 0$'"
+bash $s/slop-check.sh $f/defaults.html >"$tmp/def.txt" 2>&1
+for rule in gradient-text nested-card icon-tile all-centered default-type-scale generator-trace recipe-fingerprint; do
+  check "slop: catches $rule" "grep -q '^$rule:' $tmp/def.txt"
+done
 check "slop: --allow removes a rule" "! bash $s/slop-check.sh $f/sloppy.html --allow trendy-font | grep -q '^trendy-font:'"
 
 check "slop: layers and picture cards aren't flagged" "! bash $s/slop-check.sh $f/layers.html | grep -E '^(empty-card|fake-visual|generic-card-grid):'"

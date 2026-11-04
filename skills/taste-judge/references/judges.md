@@ -9,14 +9,16 @@ The judges are usually the same kind of model that made the design, so they tend
 Start each judge as a separate sub-agent, all three at the same time. Give each one:
 
 - its brief from below, word for word
+- **Required files:** the launch prompt lists them all, and each judge ends by listing what it opened. Anyone who skipped some is sent back before its score counts
 - **Screenshots first.** They look at the work and at the reference anchors, and write down a first impression, before reading any explanation of it
 - `STYLE.md`, and this skill's `references/handbook.md` (especially **Polish**) and `references/anti-slop.md`
 - **Reference anchors:** the screenshots in `style/references/` with `references.md`, which says what each one is (see "Reference anchors")
 - **The slop report:** the output of `scripts/slop-check.sh`, as facts
-- **Preview rounds:** the screenshots of each frame of `style/preview.html` at 1440px and 375px, and the path to `preview.html` in case it wants to read the code
-- **App rounds:** the screenshots of every page of the restyled app at 1440px and 375px, the "before" screenshots, and the paths to the pages and stylesheets
+- **Preview rounds:** the screenshots of each frame of `style/preview.html` at 1440px and 375px (and the in-context screens at 820px), and the path to `preview.html` in case it wants to read the code
+- **App rounds:** the screenshots of every page of the restyled app at 1440px, 820px and 375px, the "before" screenshots, and the paths to the pages and stylesheets
 - **Brand mode:** the brand's own screenshots as well (`style/extract/*/page-*.png`), the `## Locked` section of `STYLE.md` and `style/audit.md`
 - the **brief from the user**: what's being styled, who it's for, the idea, the why, the three feeling words, the anti-feelings, and the must-haves
+- the **surface mode** of each screen from the brief: judge a dashboard as a tool and a landing page as a pitch
 - the **fixed decisions**: choices the user made explicitly (a brand color, a font they insisted on, dark mode), and trade-offs settled in earlier rounds (`Settled:` lines in the brief). Judges must work within them and never ask to change them
 
 If there's no `STYLE.md` (judging a page that has no style doc), give them the page's own stylesheet instead and skip anything that compares against `STYLE.md`.
@@ -60,6 +62,8 @@ Look first, in this order, before reading anything else:
 3. In brand mode, the brand's own pages: <list of PNG paths>
 Write down your first impression in one line: would you put this next to those anchors?
 
+You must open every screenshot listed, phone and tablet included. End your reply with `Opened:` and the files you opened.
+
 Then read:
 - <path to STYLE.md>
 - <path to this skill's references/handbook.md>
@@ -68,6 +72,9 @@ Then read:
 
 The automatic slop report, as facts: <the output of slop-check.sh>
 The penalty is applied separately. Don't lower your score for what it lists; do list what only eyes can catch.
+
+Bold choices (protected; say if one has no visible job, but don't flatten it for being unusual): <the `## Bold choices` section, or "none">
+If this is a restyle, the words and structure can't change: fixes may not add or remove text. Propose a visual fix instead.
 
 The user's brief: <what's styled, who for, the idea, the why, feeling words, anti-feelings, must-haves>
 Fixed decisions (don't ask to change these): <list, or "none">
@@ -148,7 +155,7 @@ A problem without a concrete fix isn't useful. "The colors feel off" isn't feedb
 
 ### 3. Art direction judge
 
-> You're a senior art director. Judge only the concept: does this look like the idea in the brief, for these users, with these feelings? Check: the DNA is visible on every frame, not only the cover; it borrows the theme's systems (materials, printing, lettering, places) instead of its clichés; it puts the theme at the edges and keeps the core clear; it has one memorable signature move used consistently; every component looks like it belongs to the same world; it avoids the anti-feelings; and it doesn't look like the generic default (Inter, rounded gray cards, purple gradients) unless the brief asked for that. Go through "What only eyes can catch" in the anti-slop checklist, and list what you find as problems. Ask yourself: if you saw this with the logo removed, would you know whose product it is? Score it from 1 to 10 using the shared scale and format.
+> You're a senior art director. Judge only the concept: does this look like the idea in the brief, for these users, with these feelings? Check: the DNA is visible on every frame, not only the cover; it borrows the theme's systems (materials, printing, lettering, places) instead of its clichés; it puts the theme at the edges and keeps the core clear; it has one memorable signature move used consistently; every component looks like it belongs to the same world; it avoids the anti-feelings; and it doesn't look like the generic default (Inter, rounded gray cards, purple gradients) unless the brief asked for that. Go through "What only eyes can catch" in the anti-slop checklist, and list what you find as problems. Ask yourself: if you saw this with the logo removed, would you know whose product it is? **Then answer: what would you remember about this tomorrow? Name it in your review. If the honest answer is nothing, score no more than 6, however clean it is.** Check that the work matches the energy, rhythm and motion dials in `STYLE.md`. Score it from 1 to 10 using the shared scale and format.
 
 ### In brand mode
 
@@ -164,7 +171,7 @@ The brief is to serve an existing brand, not to invent one, so **nobody scores o
 
 Each round has two steps. **First, alone:** the three judges score in parallel, without seeing each other's reviews, so each view is formed independently and nobody anchors on someone else's number. **Then, together:** once all three reviews are in, every judge reads the other two and can respond.
 
-**Don't stop or report back while judges are running, even if their replies arrive in the background: wait for all three, and if one never arrives, relaunch it once and say so.** Give each judge the other reviews in full, not summarized. Send each judge the other two reviews: continue the same sub-agent if your tool can (it keeps its own review in mind), or else start a new one with its brief, its own review and the other two. If the reply arrives twice (once as a message, once as the agent's final report), use one. Ask:
+Start **a new sub-agent for each discussion**, and wait for its result before going on; don't message the earlier judges, because replies that arrive in the background stop runs partway. Launch all three in one message, in the foreground if your tool lets you choose. Give each one its brief, its own review and the other two reviews **in full, not summarized**, and the same screenshots. Ask:
 
 ```
 Here are the other two judges' reviews. Reply in this format:
@@ -187,7 +194,7 @@ Average the three **final** scores (one decimal place; in light mode, the first 
 
 - `Judges: <model>; designer: <model>`, which anchors they saw, and what each judge actually opened. A judge who skipped the phone views or `STYLE.md` hasn't finished: send it back before counting its score
 - each judge's first impression, review and discussion reply, with the first and final scores
-- `Average: <x> − penalty <y> = final <z> (pass mark <p>: passed | not passed)`
+- `Average: <x> − penalty <y> = final <z> (pass mark <p>: passed | not passed)`, and `Hard gate: PASS | FAIL`. A hard-gate failure means not passed, whatever the score
 - the slop report, with waivers and their reasons
 - **Fix list:** every problem with its fix, problems two or more judges agree on first, then the lowest-scoring judge's
 - **Disagreements:** where the judges pulled in opposite directions, and which way the brief points

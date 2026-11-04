@@ -31,6 +31,9 @@ Only you start it: type `/taste`, optionally with your idea. Say "light" for one
 These apply to every run:
 
 - **Real assets.** It collects the product's own logo, images and screenshots into `style/assets/`. Whatever's missing becomes a clearly marked placeholder on an asset list for you. Never an empty card, never a CSS gradient pretending to be a picture.
+- **A hard gate.** Invented proof, dead controls, broken phone or tablet layouts, failing contrast, empty boxes and fake images block delivery whatever the score, with no waivers. `style/delivery.md` checks the final version, line by line.
+- **No recipes.** Values are chosen per project, and copied fingerprints from popular design skills cost points, as does never touching a default. Each screen is judged by its surface mode: persuade, operate, read or experience.
+- **Taste, not just filtering.** Dials set how bold it should be, bold choices are protected if they have a job, and a design nobody would remember can't score above 6.
 - **Anti-slop penalties.** `slop-check.sh` looks for the marks of generic AI design on the rendered page, and the penalty (at most 3) comes off the judges' average. The pass mark applies to what's left.
 
   | Rule | Penalty |
@@ -38,7 +41,7 @@ These apply to every run:
   | Gradient faking an image, empty box, purple or violet gradient, emoji icons, invented "Step 01" sequences, changed content, off-brand values | 1 each |
   | Identical rounded text cards, stock marketing phrases, fashionable default fonts with no reason | 0.5 each |
 
-  A waiver needs a reason tied to the product, written in the brief. A brand's own values are never penalized.
+  A 0.5 rule alone costs nothing; two or more kinds do. A waiver needs a reason tied to the product, written in the brief. A brand's own values are never penalized.
 - **Less self-validation.** The judges are usually the same model that designed the page, so they look at the work before reading its explanation, compare it with real examples in `style/references/`, can run on a different model, can't remove the penalty, and cap at 5 anything worse than what it replaces.
 
 ## Brand mode: `/taste --brand`
@@ -46,10 +49,10 @@ These apply to every run:
 For a product whose brand is already good. A new identity on a polished brand usually comes out worse, so this mode keeps it:
 
 ```
-/taste --brand https://example.com
+/taste --brand
 ```
 
-1. **Extracts the design system** (`/taste-extract`) from a live URL or your files: colors, type, spacing, components and imagery style go into a `## Locked` section of `STYLE.md`, which later steps and judges can't change.
+1. **Extracts the design system** (`/taste-extract`) from your actual code, your `DESIGN.md` or `STYLE.md` and any files you give: colors, type, spacing, components and imagery style go into a `## Locked` section, which later steps and judges can't change. An existing doc is kept and updated; with none, one is created from your actual design. Where sources disagree, it locks what's really built and asks you about the conflict.
 2. **Collects the brand's real assets** and writes `style/audit.md`: accessibility failures and inconsistencies, each with a fix inside the brand. You choose which to make.
 3. **Builds fixes and new screens** with locked values, plus any `## Extensions` that say why they're needed. The preview shows before and after.
 4. **Scores brand fidelity instead of originality:** a brand fidelity judge compares the work side by side with the brand's own pages. Off-brand colors and fonts cost points.
@@ -65,7 +68,7 @@ Each one also works on its own. They hand over through files, so you can stop af
 
 | Skill | Does | Reads | Writes |
 |---|---|---|---|
-| `/taste-extract` | Locks an existing brand, collects its assets, audits it | a URL or files | `## Locked` in `STYLE.md`, `style/assets/`, `style/audit.md` |
+| `/taste-extract` | Locks an existing brand, collects its assets, audits it | your code, style doc and files | `## Locked` in `STYLE.md`, `style/assets/`, `style/audit.md` |
 | `/taste-brief` | Interview, options page, moodboard, assets, reference anchors | the project | `style/brief.md`, `style/options.html`, `style/assets/`, `style/references/` |
 | `/taste-directions` | Three directions, asks which you like most | `style/brief.md` | `style/directions.html`, the pick in the brief |
 | `/taste-system` | The style guide | the brief | `STYLE.md` |

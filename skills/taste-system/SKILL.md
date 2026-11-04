@@ -56,6 +56,12 @@ Corner radius, borders, shadows or elevation, textures, icon style, imagery and 
 ## Motion
 Durations, easing, what moves and why.
 
+## Bold choices
+Each unusual choice, the job it does and the part of the brief it serves. A choice with no job doesn't belong here, or in the design.
+
+## Dials
+Energy, rhythm and motion from the brief, and what each means here.
+
 ## Components
 For each one: how it looks and its states (hover, focus, active, disabled, loading, error).
 Buttons, inputs, selects, checkboxes, radios, toggles, cards, navigation, tabs, badges, alerts, toasts, tables, modals, avatars, progress, empty states.
@@ -75,7 +81,7 @@ How the UI text talks, in two or three lines with examples.
 (Redesigns only.) Previous direction, and why it changed.
 ~~~
 
-Every rule needs a why, from the handbook or the brief. **A font or color from the anti-slop list needs a reason specific to this product**, written in the brief's `## Slop exceptions`, or a different choice. Under `## Moodboard`, say which real assets from `style/assets/` carry the look, and how images are treated. Values should be exact (hex, px, ms). Load fonts from Google Fonts or another open source, never paid fonts without a licence.
+Choose every value for this project: examples in these skills are never ingredients (`references/anti-slop.md`, "Never hand over a recipe"). In brand mode, refinement preserves; a new style replaces. **The brief wins over the skill's taste,** and the conflict is noted, not hidden. Every rule needs a why, from the handbook or the brief. **A font or color from the anti-slop list needs a reason specific to this product**, written in the brief's `## Slop exceptions`, or a different choice. Under `## Moodboard`, say which real assets from `style/assets/` carry the look, and how images are treated. Values should be exact (hex, px, ms). Load fonts from Google Fonts or another open source, never paid fonts without a licence.
 
 ## In brand mode
 

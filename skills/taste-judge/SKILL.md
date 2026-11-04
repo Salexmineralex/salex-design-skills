@@ -20,7 +20,7 @@ Score a design with three expert judges and write down what they found. **This s
 
 ## 1. Screenshots and the automatic check
 
-Take screenshots of each frame (`#id`) or page at 1440px and 375px wide into `style/judging/round-<n>/` (or `app-round-<n>/`), with a browser tool that saves files or this skill's `scripts/screenshot.sh` (`bash <skill folder>/scripts/screenshot.sh "style/preview.html#color" style/judging/round-1/color-1440.png 1440`; it captures only the frame with that id). Write down every warning it prints (sideways scroll, elements sticking out, cut-off content, overlaps, spilling text) and give them to the judges as facts. Don't fix them: run alone, you only report.
+Take screenshots of each frame (`#id`) or page at 1440px and 375px wide (pages and in-context screens at 820px too) into `style/judging/round-<n>/` (or `app-round-<n>/`), with a browser tool that saves files or this skill's `scripts/screenshot.sh` (`bash <skill folder>/scripts/screenshot.sh "style/preview.html#color" style/judging/round-1/color-1440.png 1440`; it captures only the frame with that id). Write down every warning it prints (sideways scroll, elements sticking out, cut-off content, overlaps, spilling text) and give them to the judges as facts. Don't fix them: run alone, you only report.
 
 For an app, also note the "before" screenshots in `style/judging/before/` if they exist.
 
@@ -46,6 +46,6 @@ Read this skill's `references/judges.md` and follow it exactly: what each judge 
 
 ## 3. Report
 
-Tell the user: the average, the penalty, the final score and whether it passes the mark, which model judged, each judge's score (first → final), any slop findings, the top problems with their fixes (agreed ones first), the disagreements, and where the notes are. Stop there. Run alone, suggest `/taste` or `/taste-apply` if they want the fixes made. Run as part of another skill, hand the notes back to it.
+Tell the user: whether the hard gate passes, the average, the penalty, the final score and whether it passes the mark, which model judged, each judge's score (first → final), any slop findings, the top problems with their fixes (agreed ones first), the disagreements, and where the notes are. Stop there. Run alone, suggest `/taste` or `/taste-apply` if they want the fixes made. Run as part of another skill, hand the notes back to it.
 
 Screenshots are working files: if the user runs this alone and doesn't need them, offer to delete the images and keep the notes.

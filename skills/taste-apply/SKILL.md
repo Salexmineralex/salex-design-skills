@@ -48,9 +48,9 @@ If the user stops after any piece, the app is left consistent at that point: res
 
 ## Check it
 
-Run the app's build, linters and tests. Take screenshots of every page at 1440px and 375px into `style/judging/app-round-<n>/` and fix every warning `screenshot.sh` gives. Compare them with the preview, and go through the handbook's Polish rules again on the real pages: real content breaks things the preview didn't. Press Tab through each page once and look at every focused element: the preview shows focus as a drawing, the real page shows what keyboard users actually get.
+Run the app's build, linters and tests. Take screenshots of every page at 1440px, 820px and 375px into `style/judging/app-round-<n>/` and fix every warning `screenshot.sh` gives. Compare them with the preview, and go through the handbook's Polish rules again on the real pages: real content breaks things the preview didn't. Press Tab through each page once and look at every focused element: the preview shows focus as a drawing, the real page shows what keyboard users actually get.
 
-Then run the slop check on every page against its original, so words can't change and nothing generic can creep in. Save the originals first (`git show HEAD:<page> > style/judging/source/<page>`; only their text is compared), then run `bash <skill folder>/scripts/slop-check.sh <page> --source style/judging/source/<page>`, adding `--locked STYLE.md` in brand mode and `--allow` for waivers in the brief. Fix what it finds: `content-changed` means you broke "change looks only", unless you built a screen the brief asked for.
+Then run the slop check on every page against its original, so words can't change and nothing generic can creep in. Save the originals first (`git show HEAD:<page> > style/judging/source/<page>`; only their text is compared), then run `bash <skill folder>/scripts/slop-check.sh <page> --source style/judging/source/<page>`, adding `--locked STYLE.md` in brand mode and `--allow` for waivers in the brief. **Rerun it on a page after each set of edits to it,** not only at the end, so slop is caught when it's cheap. Fix what it finds: `content-changed` means you broke "change looks only", unless you built a screen the brief asked for.
 
 ## Judge it, learn from the notes, fix
 
@@ -59,7 +59,18 @@ Then run the slop check on every page against its original, so words can't chang
 3. **Below the pass mark, judge again** with fresh judges, up to the most app rounds. Passing, still make the cheap fixes they listed. A fix that would break a fixed decision isn't made; tell the user at the end.
 4. If the last round still doesn't pass, stop and show the user every round's scores and the problems that keep coming back: usually the brief has a conflict only they can settle.
 
-Show the user before and after screenshots of the main pages, with the scores.
+Before showing the user, pass the delivery gate on the final pages (below). Then show before and after screenshots of the main pages, with the scores.
+
+## Delivery gate
+
+Judging happened before the last fixes, so check what you're really delivering. Write `style/delivery.md`, one line per item, with evidence:
+
+```md
+- PASS Sideways scroll: none at 1440, 820, 375 (screenshot.sh, final pages)
+- FAIL Keyboard focus: nav links show no ring on /settings
+```
+
+Cover every hard-gate rule in `references/anti-slop.md`, rerun on the final pages, and list the fixes made since the last judging round. **Any FAIL means fix it and check again; the work isn't finished.** If those fixes added or redrew any artwork, changed layout or touched several pages, judge once more, even if that round would pass. If a FAIL can't be fixed without breaking a fixed decision or a locked value, show the user that line and ask.
 
 ## When you're done
 

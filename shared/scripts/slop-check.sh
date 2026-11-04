@@ -11,19 +11,32 @@
 #                           (violet-gradient, ...) or a font (font:Inter)
 #   --width <px>            viewport width, 1440 by default
 #
+# Hard-gate rules (*) can't be waived and block delivery, whatever the score. A 0.5
+# rule costs points only when two or more kinds fire: one alone is noted, a cluster is slop.
+#
 # Rule                 Penalty   What it catches
-# fake-visual          1         a gradient box standing in for an image
-# empty-card           1         a box with nothing in it
+# sideways-scroll *    1         the page scrolls sideways at this width
+# fake-visual *        1         a gradient box standing in for an image
+# empty-card *         1         a box with nothing in it
 # violet-gradient      1         a purple or violet gradient
 # emoji-icon           1         emoji used as interface icons
 # invented-steps       1         "Step 01", "01 02 03" sequences the source doesn't have
-# content-changed      1         text added or removed compared with --source
-# off-brand            1         colors, fonts or weights outside --locked
+# content-changed *    1         text added or removed compared with --source
+# off-brand *          1         colors, fonts or weights outside --locked
 # generic-card-grid    0.5       3+ identical rounded cards with no media
 # filler-copy          0.5       stock marketing phrases and lorem ipsum
 # trendy-font          0.5       a fashionable default font with no stated reason
 #
-# Prints one line per finding, then "Penalty: <x>" (at most 3). Exits 1 if it found
+# left-stripe          0.5       a colored stripe down one side of a box
+# gradient-text        0.5       a gradient clipped to text
+# nested-card          0.5       a rounded box inside a rounded box
+# icon-tile            0.5       3+ icons sitting in small colored squares
+# all-centered         0.5       nearly every block of text is centered
+# default-type-scale   0.5       every font size sits on Tailwind's default scale
+# generator-trace      0.5       a site builder's title or attributes left in the code
+# recipe-fingerprint   0.5       values copied from popular design skills (picsum.photos...)
+#
+# Prints one line per finding, then "Hard gate: PASS|FAIL" and "Penalty: <x>" (at most 3). Exits 1 if it found
 # anything, 0 if clean. Mark deliberate exceptions in the page's HTML:
 #   data-placeholder   an asset still to come; counted and listed, not penalized
 #   data-specimen      this element and its contents are a specimen (swatches, radii)
@@ -33,7 +46,7 @@
 set -euo pipefail
 
 if [ $# -lt 1 ]; then
-  sed -n '2,31p' "$0"
+  sed -n '2,43p' "$0"
   exit 2
 fi
 
@@ -74,7 +87,8 @@ const fs = require("fs");
 const [url, sourceUrl, lockedPath, allowArg, width] = process.argv.slice(2);
 const allow = new Set(allowArg.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean));
 
-const PENALTY = { "fake-visual": 1, "empty-card": 1, "violet-gradient": 1, "emoji-icon": 1, "invented-steps": 1, "content-changed": 1, "off-brand": 1, "generic-card-grid": 0.5, "filler-copy": 0.5, "trendy-font": 0.5 };
+const PENALTY = { "fake-visual": 1, "empty-card": 1, "violet-gradient": 1, "emoji-icon": 1, "invented-steps": 1, "content-changed": 1, "off-brand": 1, "generic-card-grid": 0.5, "filler-copy": 0.5, "trendy-font": 0.5, "left-stripe": 0.5, "gradient-text": 0.5, "nested-card": 0.5, "icon-tile": 0.5, "all-centered": 0.5, "default-type-scale": 0.5, "generator-trace": 0.5, "recipe-fingerprint": 0.5, "sideways-scroll": 1 };
+const HARD = new Set(["sideways-scroll", "fake-visual", "empty-card", "content-changed", "off-brand"]);
 const MAX_PENALTY = 3;
 const TRENDY = ["inter", "space grotesk", "instrument serif", "fraunces", "playfair display", "dm sans", "dm serif display", "poppins", "plus jakarta sans", "geist", "sora", "outfit", "manrope", "newsreader", "syne", "bricolage grotesque", "cormorant garamond"];
 const FILLER = /lorem ipsum|dolor sit amet|\bseamless(ly)?\b|\bunlock\b|\belevate\b|\bempower(s|ing)?\b|\bsupercharge\b|next[- ]generation|game[- ]chang|world[- ]class|cutting[- ]edge|\brevolutioni[sz]e|next level|built for the modern|trusted by (teams|thousands|millions)|effortless(ly)?|at the speed of|reimagine[ds]?\b/gi;
@@ -140,7 +154,7 @@ const inspect = () => {
     const bg = parseColor(s.backgroundColor).a > 0;
     return (bw && sides) || bg || s.boxShadow !== "none";
   };
-  const found = [], placeholders = [];
+  const found = [], placeholders = [], tiles = [];
   const all = [...document.querySelectorAll("body, body *")].filter((el) => !el.closest("svg, script, style, noscript, head") && visible(el));
 
   for (const el of all) {
@@ -150,7 +164,16 @@ const inspect = () => {
     const gradient = /gradient/.test(s.backgroundImage);
     if (gradient && r.width >= 80 && r.height >= 24 && stops(s.backgroundImage).some(violet)) found.push(["violet-gradient", name(el) + " has a purple or violet gradient"]);
     if (gradient && r.width >= 160 && r.height >= 100 && !decoration(el) && !hasMedia(el) && ownText(el).length < 20) found.push(["fake-visual", name(el) + " (" + Math.round(r.width) + "x" + Math.round(r.height) + ") is a gradient standing in for an image; use a real asset or a marked placeholder"]);
-    if (!gradient && r.width >= 100 && r.height >= 60 && boxed(s) && !decoration(el) && !hasMedia(el) && !ownText(el) && el.tagName !== "BODY" && el.tagName !== "HTML" && !el.matches("input, select, textarea, button, hr, progress, meter") && !/url\(/.test(s.backgroundImage) && !el.querySelector("input, select, textarea, button")) found.push(["empty-card", name(el) + " (" + Math.round(r.width) + "x" + Math.round(r.height) + ") is an empty box"]);
+    if (!gradient && r.width >= 100 && r.height >= 60 && boxed(s) && !decoration(el) && !hasMedia(el) && !ownText(el) && el.tagName !== "BODY" && el.tagName !== "HTML" && !el.matches("input, select, textarea, button, hr, progress, meter, pre, code") && !/url\(/.test(s.backgroundImage) && !el.querySelector("input, select, textarea, button")) found.push(["empty-card", name(el) + " (" + Math.round(r.width) + "x" + Math.round(r.height) + ") is an empty box"]);
+    if (parseFloat(s.borderLeftWidth) >= 3 && parseFloat(s.borderRightWidth) === 0 && parseFloat(s.borderTopWidth) === 0 && r.height >= 40) found.push(["left-stripe", name(el) + " has a colored stripe down one side"]);
+    if (gradient && /text/.test(s.webkitBackgroundClip || s.backgroundClip) && ownText(el)) found.push(["gradient-text", name(el) + " has gradient text"]);
+    const framed = (c) => parseFloat(c.borderTopLeftRadius) >= 8 && parseFloat(c.borderLeftWidth) > 0 && parseFloat(c.borderRightWidth) > 0 || (parseFloat(c.borderTopLeftRadius) >= 8 && c.boxShadow !== "none");
+    if (r.width >= 160 && r.height >= 80 && framed(s) && el.parentElement) {
+      for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+        if (framed(cs(a)) && !specimen(a)) { found.push(["nested-card", name(el) + " is a card inside " + name(a)]); break; }
+      }
+    }
+    if (r.width >= 28 && r.width <= 72 && Math.abs(r.width - r.height) < 3 && parseColor(s.backgroundColor).a > 0 && el.querySelector("svg, i") && !ownText(el)) tiles.push(name(el));
     // Rows of the same rounded box with only text in it: the default feature grid.
     if (/flex|grid/.test(s.display)) {
       const kids = [...el.children].filter(visible);
@@ -161,6 +184,17 @@ const inspect = () => {
       }
     }
   }
+
+  if (tiles.length >= 3) found.push(["icon-tile", tiles.length + " icons sit in small colored squares"]);
+  const reading = all.filter((el) => el.matches("h1, h2, h3, p") && !specimen(el) && ownText(el));
+  const centered = reading.filter((el) => /center/.test(cs(el).textAlign));
+  if (reading.length >= 6 && centered.length / reading.length >= 0.8) found.push(["all-centered", centered.length + " of " + reading.length + " text blocks are centered"]);
+  const TW = new Set([12, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72, 96, 128]);
+  const typeSizes = new Set(all.filter((el) => !specimen(el) && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).map((el) => parseFloat(cs(el).fontSize)));
+  if (typeSizes.size >= 4 && [...typeSizes].every((v) => TW.has(v))) found.push(["default-type-scale", "all " + typeSizes.size + " font sizes sit on Tailwind's default scale; choose the sizes for this design"]);
+  const html = document.documentElement.outerHTML;
+  if (/data-lov-id|gptengineer|lovable-tagger/i.test(html) || /^(vite \+ react|react app|untitled|document|lovable.*|v0 app)$/i.test(document.title.trim())) found.push(["generator-trace", "a builder's default title or attributes are still here"]);
+  for (const m of new Set(html.match(/picsum\.photos|rounded-\[2rem\]|rounded-\[2\.5rem\]|0_20px_40px_-15px|47\.2%|\(312\) 847-1928/g) || [])) found.push(["recipe-fingerprint", '"' + m + '" is copied from popular design skills']);
 
   // Emoji inside controls and headings, or leading a block of text, are acting as icons.
   const emoji = /\p{Emoji_Presentation}|\p{Extended_Pictographic}️/u;
@@ -215,6 +249,8 @@ const textOf = async (browser, target) => {
   const page = await textOf(browser, url);
   const seen = await page.evaluate(inspect);
   const findings = [...seen.found];
+  const wider = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  if (wider > 0) findings.push(["sideways-scroll", "the page is " + wider + "px wider than the window"]);
   const norm = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
 
   let sourceBlocks = null, sourceAll = "", sourceColors = {};
@@ -223,8 +259,8 @@ const textOf = async (browser, target) => {
     const original = await sp.evaluate(inspect);
     sourceBlocks = original.blocks.map(norm);
     sourceColors = original.colors;
-    // The original's own violet gradients are the brand's, not slop.
-    if (original.found.some(([rule]) => rule === "violet-gradient")) allow.add("violet-gradient");
+    // What the original already does is the brand's, not slop.
+    for (const [rule] of original.found) if (!HARD.has(rule)) allow.add(rule);
     sourceAll = sourceBlocks.join(" | ");
     const mine = seen.blocks.map(norm);
     const whole = mine.join(" | ");
@@ -259,10 +295,12 @@ const textOf = async (browser, target) => {
     for (const f of Object.keys(seen.fonts)) if (!locked.fonts.has(f) && !generic.has(f) && locked.fonts.size) findings.push(["off-brand", 'font "' + f + '" is not in Locked or Extensions']);
   }
 
-  const kept = findings.filter(([rule]) => !allow.has(rule));
+  const kept = findings.filter(([rule]) => HARD.has(rule) || !allow.has(rule));
   // A rule costs once per page, however many times it fires.
   const rules = new Set(kept.map(([rule]) => rule));
-  const total = Math.min(MAX_PENALTY, [...rules].reduce((sum, rule) => sum + PENALTY[rule], 0));
+  const soft = [...rules].filter((rule) => PENALTY[rule] < 1);
+  const total = Math.min(MAX_PENALTY, [...rules].reduce((sum, rule) => sum + (PENALTY[rule] < 1 && soft.length < 2 ? 0 : PENALTY[rule]), 0));
+  const hardFails = [...rules].filter((rule) => HARD.has(rule));
   // Repeats of a rule add nothing: show a few of each, and the count.
   for (const rule of rules) {
     const lines = [...new Set(kept.filter(([r]) => r === rule).map(([, text]) => text))];
@@ -270,6 +308,7 @@ const textOf = async (browser, target) => {
     if (lines.length > 5) console.log(rule + ": ...and " + (lines.length - 5) + " more");
   }
   for (const p of seen.placeholders) console.log('placeholder (no penalty, must be in the asset list): "' + p + '"');
+  console.log("Hard gate: " + (hardFails.length ? "FAIL (" + hardFails.join(", ") + ")" : "PASS"));
   console.log("Penalty: " + total);
   await browser.close();
   process.exit(kept.length ? 1 : 0);
