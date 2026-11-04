@@ -45,7 +45,8 @@ const [url, out, width, frame] = process.argv.slice(2);
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: Number(width), height: 900 } });
-  await page.goto(url, { waitUntil: "networkidle" });
+  // Busy sites never go quiet: settle for the loaded page rather than crash.
+  await page.goto(url, { waitUntil: "networkidle", timeout: 30000 }).catch(() => page.goto(url, { waitUntil: "load", timeout: 45000 }));
   await page.evaluate(() => document.fonts.ready);
   // Let entrance animations (like a trace drawing itself) finish before capturing.
   await page.waitForTimeout(1600);

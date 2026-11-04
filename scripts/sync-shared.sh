@@ -8,12 +8,13 @@ cd "$(dirname "$0")/.."
 
 # skill: the shared files it needs
 manifest="
-taste-brief:      references/handbook.md scripts/contrast.py scripts/screenshot.sh
-taste-directions: references/handbook.md scripts/contrast.py scripts/screenshot.sh scripts/roll.py
-taste-system:     references/handbook.md scripts/contrast.py
-taste-preview:    references/handbook.md scripts/screenshot.sh
-taste-judge:      references/handbook.md references/judges.md scripts/contrast.py scripts/screenshot.sh
-taste-apply:      references/handbook.md references/judges.md scripts/contrast.py scripts/screenshot.sh
+taste-extract:    references/handbook.md references/assets.md scripts/extract.sh scripts/contrast.py scripts/screenshot.sh
+taste-brief:      references/handbook.md references/anti-slop.md references/assets.md scripts/extract.sh scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
+taste-directions: references/handbook.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/roll.py
+taste-system:     references/handbook.md references/anti-slop.md scripts/contrast.py
+taste-preview:    references/handbook.md references/anti-slop.md references/assets.md scripts/screenshot.sh scripts/slop-check.sh
+taste-judge:      references/handbook.md references/judges.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
+taste-apply:      references/handbook.md references/judges.md references/anti-slop.md references/assets.md scripts/contrast.py scripts/screenshot.sh scripts/slop-check.sh
 "
 
 check=0

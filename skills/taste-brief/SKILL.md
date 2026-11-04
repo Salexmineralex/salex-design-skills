@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Find out what the user means by their idea and why they want it, and write it down in `style/brief.md`, so every later design step builds on the user's own words instead of guesses.
 
-**Changes:** only the `style/` folder: `brief.md`, `options.html`, `moodboard/` and screenshots in `judging/`. Never the app.
+**Changes:** only the `style/` folder: `brief.md`, `options.html`, `moodboard/`, `assets/`, `references/` and screenshots in `judging/`. Never the app.
 
 ## Your role
 
@@ -28,6 +28,8 @@ Every big choice needs a reason tied to the product, its users or the feeling it
 - **Look for an existing style doc:** `STYLE.md`, `DESIGN.md` or `design.md` at the root or in `docs/`. If one exists, this is a **redesign**: read it, sum up its current direction in three lines, and make the first round "What's not working, what do we keep, and why?". Write its name in the brief, so the later steps rewrite that file instead of creating a new one.
 - **See the current UI, if there is one.** Take screenshots of each main page at 1440px and 375px wide into `style/judging/before/` with this skill's `scripts/screenshot.sh` (`bash <skill folder>/scripts/screenshot.sh index.html style/judging/before/home-1440.png 1440`) and look at them. Check its contrast with `scripts/contrast.py`. Show the user what's actually broken (unreadable text, a layout that spills off a phone screen), not just what's unfashionable; it's the strongest argument for or against a direction.
 - **Read the project:** what it is, who uses it, and any UI that already exists (CSS variables, Tailwind config, theme files, logos in assets). These are facts, so look them up instead of asking. An existing brand color or logo is a constraint to design around, not something to replace silently.
+- **Does it already have a brand worth keeping?** A redesign only helps a weak or generic look. If the project has a live site, or the user names a polished brand, look at it first. When it's already coherent, recommend brand mode with the question tool: "This already has a strong identity. Keep it and fix and extend it (Recommended), or replace it with a new one?" A new identity on a polished brand usually comes out worse. Choosing to keep it means brand mode: follow "In brand mode" below.
+- **Collect the real assets.** Look in the repo and on the live site (`scripts/extract.sh <url> style/extract/<page>`) for the logo, product shots and images, and start `style/assets/assets.md` as `references/assets.md` says. In the chat lines before the first prompt, ask once for what's missing. Everything after this step is built with these.
 - **No app yet is fine.** Then the brief is the start of the style every later page follows.
 - If `AGENTS.md` exists, follow its rules.
 - **A brief already exists** (`style/brief.md`) and you were started alone: show what it says in three lines and ask with the question tool whether to update it (Recommended) or start a new one. Updating keeps every section you don't change, including `## Direction`, `## Settings` and `## Progress`.
@@ -52,16 +54,17 @@ If your tool has no interactive question tool, write the questions in the chat i
 
 1. **Why**, if the only reason given is a trend.
 2. **Which reading**, if the idea is a vague genre (with the options page).
-3. **Keep and change**, in a redesign.
+3. **Keep and change**, in a redesign, or when there's a UI but no style doc.
 4. **Why**, otherwise.
 5. **The feeling.**
-6. **How strong** the idea should be (everywhere, or at the edges with a plain core).
+6. **Who it's for**, if the project doesn't make it clear.
+7. **How strong** the idea should be (everywhere, or at the edges with a plain core).
 
 The moodboard request goes in the chat lines before the prompt, never as a question, so it doesn't take a slot.
 
 "Which reading is closest?" is a taste question: no "(Recommended)" on it, since the options page is a menu, not a proposal.
 
-If the user's message gives a trend as the only reason ("it's trendy", "everyone's doing it"), the first round starts with why.
+If the user's message gives a trend as the only reason ("it's trendy", "everyone's doing it"), the first round starts with why. If they still want it after hearing the risk, it's their call: write "user's choice, no reason given" and carry on.
 
 The answers must cover:
 
@@ -80,6 +83,14 @@ If you can't picture the style yet (the idea is a single vague word, the answers
 If they can't or won't send images, go on with their words and their pick from the options, and say so in the brief.
 
 Look at every image. Write down what they share: the palette, contrast, textures, type, shapes, density and era. Tell the user what you see ("All five are warm, grainy and hand-printed, but three are busy and two are very calm. Which way?") so they can correct you.
+
+## Reference anchors
+
+The judges compare the work with real examples. Collect them once the reading of the idea is known, not before, and stop at 4 good ones or 8 attempts: a weak anchor is worse than none. Take the references the user loved, if they're online, plus two or three strong products in the same field, and screenshot each one: `scripts/screenshot.sh <url> style/references/<name>-1440.png 1440`. List them in `style/references/references.md`, with what each one is and why it's a good example. A site that refuses is skipped. Don't ask the user for this unless they named references you can't reach.
+
+## In brand mode
+
+`/taste-extract` has already recorded the brand, or will right after this, so there's no idea to explore. Don't ask which version of the idea, why this idea or for a moodboard, and don't build an options page. Ask one short round: what's the job (an audit and fixes, new screens, or both), which new screens if any, who they're for, and anything in the brand that's off limits. Write `## Fixed decisions` as: "Everything in `## Locked`."
 
 ## Write style/brief.md
 
@@ -107,6 +118,9 @@ Brand colors, logo, light/dark, platforms, accessibility.
 
 ## Fixed decisions
 Choices the user made explicitly. Later steps and the judges never change these.
+
+## Slop exceptions
+Rules from references/anti-slop.md waived, each with a reason tied to this product. Usually empty.
 
 ## Open questions
 Anything still unclear, for the next step to settle.

@@ -12,7 +12,8 @@ Write `STYLE.md`: exact values another agent can build from without guessing, an
 
 ## Before you start
 
-- Read this skill's `references/handbook.md`. Every rule in `STYLE.md` should trace back to it, or to a reason the user gave.
+- Read this skill's `references/handbook.md` and `references/anti-slop.md`. Every rule in `STYLE.md` should trace back to the handbook, or to a reason the user gave.
+- **If `STYLE.md` has a `## Locked` section, you're in brand mode:** see "In brand mode" below, and don't write a new identity.
 - Read `style/brief.md`, especially `## Direction` and `## Fixed decisions`. If there's no brief or no direction yet, ask one short round with the question tool (`AskUserQuestion` or your tool's equivalent) for the idea, why, the feeling and the must-haves, and say that `/taste-directions` would give them three to choose from first.
 - If a style doc already exists, this is a **redesign**: keep what the brief says to keep, and move the old direction into `## History` with the reason it changed.
 - If `style/judging/round-*.md` notes exist and you were asked to fix them, read every round, not just the last (see "Fixing after the judges").
@@ -74,13 +75,21 @@ How the UI text talks, in two or three lines with examples.
 (Redesigns only.) Previous direction, and why it changed.
 ~~~
 
-Every rule needs a why, from the handbook or the brief. Values should be exact (hex, px, ms). Load fonts from Google Fonts or another open source, never paid fonts without a licence.
+Every rule needs a why, from the handbook or the brief. **A font or color from the anti-slop list needs a reason specific to this product**, written in the brief's `## Slop exceptions`, or a different choice. Under `## Moodboard`, say which real assets from `style/assets/` carry the look, and how images are treated. Values should be exact (hex, px, ms). Load fonts from Google Fonts or another open source, never paid fonts without a licence.
+
+## In brand mode
+
+`## Locked` was written by `/taste-extract` and it's a hard constraint: no value in it changes, whatever the judges or the audit say. Keep the rest of the file about using the brand, not inventing it:
+
+- **Add only to `## Extensions`.** A new value must be needed by an audit fix or a new screen, and each one must say why and which locked value it derives from: a darker shade of the brand's own gray to pass contrast, a state the brand never drew. Run new color pairs through `contrast.py`.
+- **Fill in only what's missing:** the components and states new screens need, in the brand's own shapes, and rules drawn from what you saw. Skip `## Idea`, `## DNA` and `## Moodboard`'s anti-references if the brand already answers them; keep `## Voice` and `## Do and don't`.
+- **If a fix needs a locked value changed,** don't make it. Put it in `style/audit.md` as a question for the user.
 
 ## Fixing after the judges
 
 When `/taste` sends you back here with judges' notes, the notes are the input:
 
-- Make every fix in the fix list that doesn't break a fixed decision, worst first.
+- Make every fix in the fix list that doesn't break a fixed decision or a locked value, worst first. Slop findings count as fixes, unless the brief waives them.
 - Fix the cause, not the symptom: a contrast problem in one component usually means a token is wrong for everything that uses it.
 - When a problem has come back in two or more rounds, the earlier fix didn't work. Don't nudge the same value again; change the approach, and say what you changed.
 - Write each lesson into `## Do and don't` ("Don't let a pressed key's travel show a second line in dark mode: one slab, one outline"), so the app restyle and every later page follow it too.

@@ -12,9 +12,11 @@ Turn the brief into three real alternatives, show them, and let the user pick th
 
 ## Before you start
 
-Read `style/brief.md` and this skill's `references/handbook.md`. If there's no brief, take the idea from the user's message and the project itself, ask at most one round with the question tool for what's missing (the idea, why, the feeling), and write a short `style/brief.md` with those answers first. If the brief has open questions that change the directions, ask them now.
+Read `style/brief.md` and this skill's `references/handbook.md`, `references/anti-slop.md` and `references/assets.md`. If there's no brief, take the idea from the user's message and the project itself, ask at most one round with the question tool for what's missing (the idea, why, the feeling), and write a short `style/brief.md` with those answers first. If the brief has open questions that change the directions, ask them now.
 
 Every direction must respect the brief's must-haves and fixed decisions.
+
+**In brand mode, skip this skill:** there's no new identity to choose. Tell the user so if they started it alone, and point them to `/taste-extract` and `/taste --brand`.
 
 ## Three directions
 
@@ -22,13 +24,15 @@ Every direction must respect the brief's must-haves and fixed decisions.
 - **B. Adjacent:** the same idea from an unexpected angle. Pirates could become a ship's logbook and old sea charts instead of skulls; skateboard could become 90s zine photocopies instead of graffiti.
 - **C. Wildcard:** run this skill's `scripts/roll.py` (`python3 <skill folder>/scripts/roll.py`) to get random traits (era, material, place, energy, color strategy, type voice, shape language, object). Mix two or three of them into the idea. Re-roll a trait only if it breaks a must-have, and say which traits you used.
 
+**Avoid the first thing that comes to mind.** Directions drift toward whatever is in fashion (a serif headline with one violet accent, a neutral grotesk on off-white). Write down the default look for this kind of product, and make sure no direction is that look without a reason from the brief. No two directions may share a type pairing or a main hue.
+
 For each one give: a name, a short paragraph that paints the picture, a 5-color palette (hex, with the main text pair checked by `scripts/contrast.py`), a type pairing, the **signature move** (the one thing people will remember), and why it fits the user's answers.
 
 ## Show them
 
 Nobody can picture a style from a paragraph and five hex codes, so the user must **see** each direction before choosing.
 
-Build `style/directions.html`: one section per direction, each a small real screen of this product in that style, not a swatch card. A hero or the app's main screen with the project's real name and content: heading, a paragraph, a primary and a secondary button, an input, a card or a row of data, the signature move in place, and its texture or imagery. Under it, the palette swatches with hex and the font names. Each must differ in more than color: type, shapes, density and mood. Lay them side by side on desktop and stacked on a phone, with a big label (A, B, C and the name) so the user can point.
+Build `style/directions.html`: one section per direction, each a small real screen of this product in that style, not a swatch card. A hero or the app's main screen with the project's real name and content: heading, a paragraph, a primary and a secondary button, an input, a card or a row of data, the signature move in place, and its texture or imagery. Use the project's real assets from `style/assets/` and its real words; where an asset is missing, show a marked placeholder as `references/assets.md` says, never an empty box or a gradient standing in for an image. Don't invent numbers, testimonials or steps to fill the screen. Under it, the palette swatches with hex and the font names. Each must differ in more than color: type, shapes, density and mood. Lay them side by side on desktop and stacked on a phone, with a big label (A, B, C and the name) so the user can point.
 
 Take screenshots at 1440px and 375px with `scripts/screenshot.sh`, fix any warning it gives, and look at them: if two directions look alike, push them apart before showing.
 

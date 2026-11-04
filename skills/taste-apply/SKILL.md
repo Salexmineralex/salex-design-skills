@@ -12,8 +12,8 @@ Make the real app look like `STYLE.md`, then have it judged on the real pages, b
 
 ## Before you start
 
-- Read `STYLE.md` (or the style doc `style/brief.md` names) and this skill's `references/handbook.md`. No style doc: stop and say that `/taste` (or `/taste-system`) writes one first. If the repo has no UI yet, say so and stop.
-- **Settings:** the pass mark (default 7), the most app rounds (default 3) and the mode (thorough or light). Take them from `style/brief.md`'s `## Settings` or the run that called you. If the user started this skill alone and said nothing, ask in one prompt with the question tool (`AskUserQuestion` or your tool's equivalent), defaults first and marked "(Recommended)".
+- Read `STYLE.md` (or the style doc `style/brief.md` names) and this skill's `references/handbook.md`, `references/anti-slop.md` and `references/assets.md`. No style doc: stop and say that `/taste` (or `/taste-system`) writes one first. If the repo has no UI yet, say so and stop.
+- **Settings:** the pass mark (default 7), the most app rounds (default 3), the judge model and the mode (thorough or light). Take them from `style/brief.md`'s `## Settings` or the run that called you. If the user started this skill alone and said nothing, ask in one prompt with the question tool (`AskUserQuestion` or your tool's equivalent), defaults first and marked "(Recommended)".
 - **Start from a clean point.** If `git status` shows uncommitted changes in the app's files, ask the user to commit or stash first (the style's own files, `STYLE.md`, `style/` and `AGENTS.md`, don't count), so the restyle can be reviewed and undone on its own.
 
 ## Restyle
@@ -24,7 +24,16 @@ Make the real app look like `STYLE.md`, then have it judged on the real pages, b
 - **Replace hard-coded values** (colors, fonts, sizes, radii, shadows) with tokens, and remove old style values nothing uses anymore. When you're done, search for leftover hex colors and pixel values outside the tokens file. A size that belongs to one component (a cover's width, a progress route's height) can stay as a value in that component's rule; give it a token only if two components share it.
 - **Change looks only.** Keep the behavior, text, routes, structure, and accessibility attributes like labels and roles. If a component can't match the style without changing behavior, leave it and tell the user.
 - **Phone is not optional.** At 375px wide no page scrolls sideways, tables and card grids reflow or scroll inside their own box (and show that they scroll), and rows of controls stack cleanly.
+- **Real assets only.** Keep the app's images. Anything new comes from `style/assets/`, or is a marked placeholder listed in `## Needed`: never an empty box, never a gradient faking an image (`references/assets.md`).
 - **Follow `## Do and don't`,** including the lessons earlier judging rounds wrote there.
+
+## In brand mode
+
+If `STYLE.md` has a `## Locked` section, the app already looks like the brand, so **this isn't a restyle**. Don't touch what's working:
+
+- **Do only what was approved:** the fixes in `style/audit.md` the user ticked, and the new screens in the brief. Each change is small enough to review alone.
+- **Locked values are facts.** Don't rename or replace the app's existing tokens to match `STYLE.md`'s names; map them. New values come only from `## Extensions`, added beside what's there.
+- **New screens** use the app's existing components first. Build a new one only when nothing fits, in the brand's own shapes.
 
 ## Big apps: go in pieces
 
@@ -41,9 +50,11 @@ If the user stops after any piece, the app is left consistent at that point: res
 
 Run the app's build, linters and tests. Take screenshots of every page at 1440px and 375px into `style/judging/app-round-<n>/` and fix every warning `screenshot.sh` gives. Compare them with the preview, and go through the handbook's Polish rules again on the real pages: real content breaks things the preview didn't. Press Tab through each page once and look at every focused element: the preview shows focus as a drawing, the real page shows what keyboard users actually get.
 
+Then run the slop check on every page against its original, so words can't change and nothing generic can creep in. Save the originals first (`git show HEAD:<page> > style/judging/source/<page>`; only their text is compared), then run `bash <skill folder>/scripts/slop-check.sh <page> --source style/judging/source/<page>`, adding `--locked STYLE.md` in brand mode and `--allow` for waivers in the brief. Fix what it finds: `content-changed` means you broke "change looks only", unless you built a screen the brief asked for.
+
 ## Judge it, learn from the notes, fix
 
-1. **Judge the real pages** as this skill's `references/judges.md` says for app rounds (three independent judges; a discussion in thorough mode; light mode is one round with no discussion). The notes go to `style/judging/app-round-<n>.md`.
+1. **Judge the real pages** as this skill's `references/judges.md` says for app rounds (three independent judges, on the judge model from the settings, against the anchors in `style/references/`; a discussion in thorough mode; light mode is one round with no discussion). The penalty comes off the average. The notes go to `style/judging/app-round-<n>.md`.
 2. **Read the notes, and every earlier `app-round-*.md`.** Make the fixes, agreed problems first. A problem in the pages gets fixed in the pages; a problem in the style itself (a token that fails everywhere) gets fixed in `STYLE.md` first, then in the app. A problem that keeps coming back means the earlier fix didn't work: change the approach, and write the lesson into `STYLE.md`'s `## Do and don't`.
 3. **Below the pass mark, judge again** with fresh judges, up to the most app rounds. Passing, still make the cheap fixes they listed. A fix that would break a fixed decision isn't made; tell the user at the end.
 4. If the last round still doesn't pass, stop and show the user every round's scores and the problems that keep coming back: usually the brief has a conflict only they can settle.

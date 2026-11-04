@@ -1,0 +1,5 @@
+interface:
+  display_name: "Taste extract"
+  short_description: "Lock an existing brand into STYLE.md, collect its assets and audit it"
+policy:
+  allow_implicit_invocation: false
