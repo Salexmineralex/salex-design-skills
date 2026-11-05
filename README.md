@@ -54,7 +54,7 @@ If a why can't be answered from the brief, your idea or the mood board, it asks 
 No single score and no pass mark.
 
 1. **Measurement disqualifies.** Contrast, type scale, typefaces, line length, touch targets, overflow, spacing, image and text, and whether the page matches `STYLE.md`. A FAIL is a FAIL.
-2. **A judge on another model** can break ties, if one is available. It sees the result blind, then checks whether each written reason is honest or an excuse. It never sets a score.
+2. **A judge on another model** looks at the final result, if one is available. It sees it blind, then checks whether each written reason is honest and visible, or an excuse. It never sets a score.
 3. **People decide.** For a redesign, show three people the before and after without saying which is new. The tool doesn't run or store a vote; that's yours to do.
 
 ## Brand mode: `/taste --brand`

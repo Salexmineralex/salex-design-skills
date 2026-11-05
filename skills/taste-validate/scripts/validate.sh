@@ -12,16 +12,28 @@
 #   contrast, typefaces (more than 3), type-scale (near-duplicate sizes, more than 10
 #   sizes), line-length (over 85 characters), touch-target (under 24px), sideways-scroll,
 #   empty-box, broken-image, focus (no visible ring), text-removed, text-added,
-#   text-hidden, off-token, unreasoned (a pattern with no decision in the handbook),
+#   text-hidden, off-token (colors, drawings, fonts and sizes), token-drift (the page
+#   gives a token another value), unreasoned (a pattern with no decision that uses it),
 #   style-lint, style-after-build
-# WARN (look at it): touch targets under 44px, weak spacing consistency, overlaps and
-#   cut-off content from screenshot.sh
+# WARN (look at it): touch targets under 44px, weak spacing consistency, spacing off the
+#   handbook's scale, overlaps and cut-off content from screenshot.sh
 # INFO: image and text ratio, placeholders, emoji replaced by drawn icons
 #
 # Anything the source already fails still fails here, marked "also in the source": a
 # restyle fixes inherited problems, it doesn't keep them. Text hidden by design (a nav
 # behind a mobile menu) isn't missing. Emoji are decoration, not copy: replacing one
 # with a drawn icon changes no text and is reported as an improvement.
+#
+# Contrast reads the real stack where it's solid. Over a gradient or an image it hides
+# the text, captures the page and measures the worst tenth of the pixels behind each line.
+# Text filled with a gradient, blended, or covered by something else can't be measured; the report
+# says how many.
+#
+# Build order: each run records a fingerprint of the handbook's decisions and tokens, and
+# of the page and its stylesheets, in <out-dir>/build-record.json. If the handbook's
+# decisions or tokens changed and the build didn't, that's style-after-build, and touching
+# a file doesn't clear it. Editing only the reasons needs no rebuild. The first run has no
+# record, so it compares file dates, with the stylesheets counted as the build.
 #
 # Mark a missing asset with data-placeholder="what's needed" and a specimen (a color
 # swatch) with data-specimen.
@@ -30,7 +42,7 @@
 set -uo pipefail
 
 if [ $# -lt 2 ]; then
-  sed -n '2,29p' "$0"
+  sed -n '2,41p' "$0"
   exit 2
 fi
 
@@ -67,11 +79,6 @@ if [ -n "$style" ]; then
     pre="FAIL style-lint: the handbook isn't finished, so nothing should be built from it
 $(echo "$lint" | sed 's/^/  /')"
   fi
-  # The handbook comes first. If it's newer than the page, the page wasn't built from it.
-  if [ -f "$target" ] && [ "$style" -nt "$target" ]; then
-    pre="$pre
-FAIL style-after-build: STYLE.md changed after this page was built; rebuild the page from it"
-  fi
 fi
 
 warnings=""
@@ -88,6 +95,8 @@ NODE_PATH="$modules" PRE="$pre" WARNINGS="$warnings" node - "$url" "$source_url"
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
+const { fileURLToPath } = require("url");
 const [url, sourceUrl, stylePath, out] = process.argv.slice(2);
 
 const measure = () => {
@@ -98,21 +107,21 @@ const measure = () => {
   const hex = (c) => "#" + [c.r, c.g, c.b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
   const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b); };
   const blend = (top, under) => ({ r: top.r * top.a + under.r * (1 - top.a), g: top.g * top.a + under.g * (1 - top.a), b: top.b * top.a + under.b * (1 - top.a), a: 1 });
-  // The solid color behind an element, or null when an image or gradient is in the way.
-  // Read the real stack at the text's position, because what's behind it may be a sibling
-  // layer rather than an ancestor. Not sure means not measured: never a guessed failure.
+  // The solid color behind an element, "pixels" when an image or gradient is in the way,
+  // "covered" when something else sits on top. Read the real stack at the text's position,
+  // because what's behind it may be a sibling layer rather than an ancestor.
   const behind = (el) => {
     const range = document.createRange();
     range.selectNodeContents(el);
-    el.scrollIntoView({ block: "center" });
+    el.scrollIntoView({ block: "center", behavior: "instant" });
     const box = range.getBoundingClientRect();
     const stack = document.elementsFromPoint(box.left + box.width / 2, box.top + box.height / 2);
     const start = stack.indexOf(el);
-    if (start < 0) return null;
+    if (start < 0) return "covered";
     const layers = [];
     for (const e of stack.slice(start)) {
       const s = cs(e);
-      if (s.backgroundImage !== "none" || e.matches("img, video, canvas, svg, svg *, picture, iframe") || +s.opacity < 1 || s.mixBlendMode !== "normal") return null;
+      if (s.backgroundImage !== "none" || e.matches("img, video, canvas, svg, svg *, picture, iframe") || +s.opacity < 1 || s.mixBlendMode !== "normal") return "pixels";
       const c = color(s.backgroundColor);
       if (c.a > 0) { layers.push(c); if (c.a === 1) break; }
     }
@@ -124,17 +133,39 @@ const measure = () => {
   const specimen = (el) => !!el.closest("[data-specimen]") || !!el.parentElement?.closest("[data-placeholder]");
   const texted = all.filter((el) => !specimen(el) && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
 
-  const contrast = new Map(), fonts = {}, sizes = {}, colors = {}, placeholders = [];
+  const contrast = new Map(), fonts = {}, sizes = {}, colors = {}, placeholders = [], overPixels = [];
+  let solid = 0, unmeasured = 0;
   for (const el of texted) {
     const s = cs(el), px = parseFloat(s.fontSize);
     fonts[s.fontFamily.split(",")[0].replace(/["']/g, "").trim()] = 1;
     sizes[px] = (sizes[px] || 0) + 1;
     const under = behind(el), fg = color(s.color);
     if (fg.a === 1) colors[hex(fg)] = 1;
-    if (!under || fg.a === 0 || /text/.test(s.webkitBackgroundClip || "")) continue;
+    if (under === "covered" || fg.a === 0 || /text/.test(s.webkitBackgroundClip || "")) { unmeasured++; continue; }
+    if (under === "pixels") { overPixels.push(el); continue; }
+    solid++;
     const f = lum(blend(fg, under)), b = lum(under), ratio = (Math.max(f, b) + 0.05) / (Math.min(f, b) + 0.05);
     const large = px >= 24 || (px >= 18.66 && +s.fontWeight >= 700);
     if (ratio < (large ? 3 : 4.5)) contrast.set(hex(blend(fg, under)) + " on " + hex(under), ratio.toFixed(2) + ":1 at " + px + "px");
+  }
+
+  // Where each line over a picture sits on the page, for sampling the capture.
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  const pixelTexts = [];
+  for (const el of overPixels) {
+    let opacity = 1, blended = false;
+    for (let e = el; e; e = e.parentElement) { opacity *= +cs(e).opacity; blended = blended || cs(e).mixBlendMode !== "normal"; }
+    // Blended text has no color of its own to compare, and invisible text isn't read.
+    if (blended || opacity < 0.05) { unmeasured++; continue; }
+    const rects = [];
+    for (const n of el.childNodes) {
+      if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+      const r = document.createRange();
+      r.selectNode(n);
+      for (const b of r.getClientRects()) if (b.width >= 1 && b.height >= 1) rects.push({ x: b.left + scrollX, y: b.top + scrollY, w: b.width, h: b.height });
+    }
+    const s = cs(el), fg = color(s.color);
+    if (rects.length) pixelTexts.push({ name: name(el), fg, hex: hex(fg), alpha: fg.a * opacity, px: parseFloat(s.fontSize), weight: +s.fontWeight, rects: rects.slice(0, 8) });
   }
 
   const longLines = [];
@@ -207,6 +238,20 @@ const measure = () => {
     }
   }
 
+  // Colors in drawings and gradients, which the color check above doesn't see. A logo keeps
+  // its own colors.
+  const drawnColors = {};
+  const solidColor = (v) => { if (/^rgb\(/.test(v)) { const c = color(v); if (c.a === 1) drawnColors[hex(c)] = 1; } };
+  for (const el of document.querySelectorAll("svg *")) {
+    if (el.closest('[data-specimen], [data-placeholder], [class*="logo" i], [id*="logo" i], [aria-label*="logo" i]') || !el.checkVisibility({ checkVisibilityCSS: true })) continue;
+    const s = cs(el);
+    solidColor(s.fill); solidColor(s.stroke); solidColor(s.stopColor);
+  }
+  for (const el of all) {
+    if (specimen(el)) continue;
+    for (const m of cs(el).backgroundImage.matchAll(/rgb\([^)]*\)/g)) solidColor(m[0]);
+  }
+
   // All text in the page, hidden or not, with whether a reader can get to it.
   const blocks = {};
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -222,9 +267,9 @@ const measure = () => {
   }
   return {
     sideways: document.documentElement.scrollWidth - innerWidth,
-    contrast: [...contrast].map(([k, v]) => k + " is " + v), fonts: Object.keys(fonts), sizes: Object.keys(sizes).map(Number).sort((a, b) => a - b),
+    contrast: [...contrast].map(([k, v]) => k + " is " + v), pixelTexts, solid, unmeasured, fonts: Object.keys(fonts), sizes: Object.keys(sizes).map(Number).sort((a, b) => a - b),
     longLines, small, tight: tight.length, base: bases[0][0], onBase: bases[0][1], spacingCount: spacing.length,
-    empties: [...new Set(empties)], broken, placeholders, patterns: [...patterns], colors: Object.keys(colors),
+    empties: [...new Set(empties)], broken, placeholders, patterns: [...patterns], colors: Object.keys(colors), drawnColors: Object.keys(drawnColors), spacing,
     picture: picture / Math.max(1, document.documentElement.scrollWidth * document.documentElement.scrollHeight),
     words: document.body.innerText.trim().split(/\s+/).length, blocks,
     drawn: document.querySelectorAll("svg, img").length,
@@ -263,8 +308,12 @@ const focusGaps = async (page) => {
 const stripEmoji = (t) => t.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}️?|️|‍/gu, "");
 const norm = (t) => stripEmoji(t).toLowerCase().replace(/\s+/g, " ").trim();
 
+const px = (v) => { const m = v.trim().match(/^([\d.]+)(px|rem)$/); return m ? +m[1] * (m[2] === "rem" ? 16 : 1) : null; };
+const normValue = (v) => v.toLowerCase().replace(/["']/g, "").replace(/\s*,\s*/g, ",").replace(/\s+/g, " ").trim().replace(/#([0-9a-f])([0-9a-f])([0-9a-f])\b/g, "#$1$1$2$2$3$3");
+
 const tokensOf = () => {
-  const lines = fs.readFileSync(stylePath, "utf8").split("\n");
+  const raw = fs.readFileSync(stylePath, "utf8");
+  const lines = raw.split("\n");
   const start = lines.findIndex((l) => /^## tokens/i.test(l));
   const body = start < 0 ? "" : lines.slice(start + 1).join("\n");
   const colors = [...body.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((m) => {
@@ -274,7 +323,39 @@ const tokensOf = () => {
   });
   const fonts = new Set();
   for (const m of body.matchAll(/--font[\w-]*\s*:\s*([^;\n]+)/gi)) m[1].split(",").forEach((f) => fonts.add(f.trim().replace(/["']/g, "").toLowerCase()));
-  return { colors, fonts, text: lines.join("\n").toLowerCase() };
+  const vars = new Map();
+  for (const m of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+    if (!vars.has(m[1])) vars.set(m[1], new Set());
+    vars.get(m[1]).add(m[2].trim());
+  }
+  const named = (re) => [...vars].filter(([n]) => re.test(n)).flatMap(([, vs]) => [...vs]);
+  const scale = (re) => { const vs = named(re); return { fluid: vs.some((v) => /clamp|calc|vw|var\(/.test(v)), values: vs.map(px).filter((v) => v !== null) }; };
+  // What a decision says it does: its title, Decision and Why, without what it rejects.
+  const decisions = [...raw.matchAll(/^(### .*|- \*\*(?:Decision|Why):\*\*.*)$/gm)].map((m) => m[1]).join("\n");
+  const said = decisions.split(/[.;\n]/).map((s) => s.toLowerCase()).filter((s) => !/\b(no|not|never|without|avoid\w*|ban\w*|don't|instead of|rather than)\b/.test(s));
+  return {
+    colors, fonts, vars, said,
+    sizes: scale(/^--(font-size|fs|text|size|type)\b/), spacing: scale(/^--(space|spacing|gap|sp|pad|padding|margin)\b/),
+    print: crypto.createHash("sha256").update(decisions.split("\n").filter((l) => /Decision:/.test(l)).join("\n") + body).digest("hex"),
+  };
+};
+
+// The page, its own stylesheets and its style tags, as loaded.
+const buildOf = async (page, target) => {
+  const read = async (u) => {
+    if (u.startsWith("file:")) { const file = fileURLToPath(u); return { file, text: fs.readFileSync(file, "utf8") }; }
+    const r = await page.request.get(u);
+    return { file: null, text: await r.text() };
+  };
+  const clean = target.split(/[#?]/)[0];
+  const hrefs = await page.evaluate(() => ({ links: [...document.querySelectorAll('link[rel~="stylesheet"]')].map((l) => l.href), styles: [...document.querySelectorAll("style")].map((s) => s.textContent).join("\n") }));
+  const origin = new URL(clean).origin;
+  const parts = [], files = [];
+  for (const u of [clean, ...hrefs.links.filter((h) => h.startsWith("file:") || new URL(h).origin === origin)]) {
+    try { const got = await read(u.split(/[#?]/)[0]); parts.push(got.text); if (got.file) files.push(got.file); } catch (e) { /* a missing stylesheet is its own problem */ }
+  }
+  parts.push(hrefs.styles);
+  return { print: crypto.createHash("sha256").update(parts.join("\n")).digest("hex"), files };
 };
 
 (async () => {
@@ -292,8 +373,9 @@ const tokensOf = () => {
   for (const [w, m, s] of [[1440, wide, source], [375, phone, sourcePhone]]) {
     if (m.sideways > 0) fail("sideways-scroll", m.sideways + "px at " + w, s && s.sideways > 0);
   }
-  const contrast = [...new Set(wide.contrast.concat(phone.contrast))];
-  for (const c of contrast) fail("contrast", c, source && source.contrast.concat(sourcePhone.contrast).includes(c));
+  const contrast = [...new Map(wide.contrast.concat(phone.contrast).map((c) => [c.split(" is ")[0], c])).values()];
+  const pair = (c) => c.split(" is ")[0];
+  for (const c of contrast) fail("contrast", c, source && source.contrast.concat(sourcePhone.contrast).map(pair).includes(pair(c)));
   if (wide.fonts.length > 3) fail("typefaces", wide.fonts.length + " (" + wide.fonts.join(", ") + ")", was((s) => s.fonts.length > 3));
   const near = wide.sizes.filter((v, i) => i && v / wide.sizes[i - 1] < 1.08);
   if (near.length >= 3 || wide.sizes.length > 10) fail("type-scale", wide.sizes.length + " sizes: " + wide.sizes.join(", "), was((s) => s.sizes.length > 10));
@@ -302,6 +384,37 @@ const tokensOf = () => {
   for (const e of wide.empties.concat(phone.empties).filter((v, i, a) => a.indexOf(v) === i)) fail("empty-box", e + " has nothing in it");
   for (const b of wide.broken) fail("broken-image", b);
   const focusPage = await open(browser, url, 1440);
+  const handbook = stylePath ? tokensOf() : null;
+  if (handbook) {
+    // A token the page gives another value: it wasn't built from this handbook.
+    const names = [...handbook.vars.keys()];
+    const declared = await focusPage.evaluate((names) => names.map((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()), names);
+    let found = 0;
+    names.forEach((n, i) => {
+      if (!declared[i]) return;
+      found++;
+      const wanted = [...handbook.vars.get(n)];
+      if (wanted.some((v) => /var\(|calc\(/.test(v))) return;
+      if (!wanted.map(normValue).includes(normValue(declared[i]))) fail("token-drift", n + " is " + declared[i] + " in the page, " + wanted.join(" or ") + " in the handbook");
+    });
+    if (names.length && !found) lines.push("WARN tokens: the page declares none of the handbook's tokens, so only its colors and sizes can be compared");
+
+    const label = path.basename(stylePath);
+    const build = await buildOf(focusPage, url);
+    const recordPath = path.join(out, "build-record.json");
+    let record = null;
+    try { record = JSON.parse(fs.readFileSync(recordPath, "utf8")); } catch (e) { /* first run */ }
+    let late = false;
+    if (record) {
+      late = record.handbook !== handbook.print && record.build === build.print;
+      if (late) fail("style-after-build", "the decisions or tokens in " + label + " changed and the page and its stylesheets didn't; rebuild from it");
+    } else if (build.files.length) {
+      const newest = Math.max(...build.files.map((f) => fs.statSync(f).mtimeMs));
+      late = fs.statSync(stylePath).mtimeMs > newest;
+      if (late) fail("style-after-build", label + " is newer than the page and its stylesheets; build from it");
+    }
+    if (!late) fs.writeFileSync(recordPath, JSON.stringify({ handbook: handbook.print, build: build.print }, null, 2) + "\n");
+  }
   const gaps = await focusGaps(focusPage);
   if (gaps.length) fail("focus", "no visible ring on " + gaps.join(", "));
 
@@ -318,18 +431,29 @@ const tokensOf = () => {
   }
 
   if (stylePath) {
-    const t = tokensOf();
+    const t = handbook;
     const near_ = (hexv) => { const v = [1, 3, 5].map((i) => parseInt(hexv.slice(i, i + 2), 16)); return t.colors.some((c) => Math.hypot(v[0] - c[0], v[1] - c[1], v[2] - c[2]) < 6); };
     for (const c of [...new Set(wide.colors.concat(phone.colors))].filter((c) => !near_(c)).slice(0, 8)) fail("off-token", "color " + c + " isn't in ## Tokens");
     const generic = new Set(["serif", "sans-serif", "monospace", "system-ui", "-apple-system", "ui-sans-serif", "ui-monospace", "ui-serif", "cursive", "fantasy"]);
     if (t.fonts.size) for (const f of wide.fonts) if (!t.fonts.has(f.toLowerCase()) && !generic.has(f.toLowerCase())) fail("off-token", 'font "' + f + "\" isn't in ## Tokens");
-    const words = { gradient: "gradient", emoji: "emoji", step: "step", card: "card" };
-    for (const p of wide.patterns) if (!t.text.includes(words[p])) fail("unreasoned", "the page uses a " + p + " pattern, and no decision in STYLE.md gives its reason");
+    for (const c of [...new Set(wide.drawnColors.concat(phone.drawnColors))].filter((c) => !near_(c)).slice(0, 8)) fail("off-token", "color " + c + " in a drawing or gradient isn't in ## Tokens");
+    if (t.sizes.values.length >= 3 && !t.sizes.fluid) {
+      const onScale = (v, scale) => scale.some((s) => Math.abs(s - v) <= 0.5);
+      for (const v of [...new Set(wide.sizes.concat(phone.sizes))].filter((v) => !onScale(v, t.sizes.values)).slice(0, 8)) fail("off-token", "text size " + v + "px isn't in ## Tokens");
+    } else lines.push("INFO tokens: text sizes not compared, ## Tokens has no fixed size scale");
+    if (t.spacing.values.length >= 3 && !t.spacing.fluid) {
+      const used = wide.spacing, on = used.filter((v) => t.spacing.values.some((s) => Math.abs(s - v) <= 0.5)).length;
+      const share = on / (used.length || 1);
+      if (used.length >= 20 && share < 0.7) lines.push("WARN spacing: only " + Math.round(share * 100) + "% of spacing values are on the scale in ## Tokens");
+    } else lines.push("INFO tokens: spacing not compared, ## Tokens has no fixed spacing scale");
+    const words = { gradient: /gradient|ombr[eé]/, emoji: /emoji/, step: /numbered|sequence|\bstep (number|label)/, card: /\bcards?\b|\bpanels?\b|\btiles?\b/ };
+    for (const p of wide.patterns) if (!t.said.some((s) => words[p].test(s))) fail("unreasoned", "the page uses a " + p + " pattern, and no decision says it does and why");
   }
 
   for (const w of process.env.WARNINGS.split("\n").filter((l) => l.trim())) lines.push(w);
   if (phone.tight) lines.push("WARN touch-target: " + phone.tight + " controls are between 24 and 44px at 375");
   if (wide.spacingCount >= 20 && wide.onBase < 0.6) lines.push("WARN spacing: only " + Math.round(wide.onBase * 100) + "% of spacing values sit on a " + wide.base + "px base");
+  lines.push("INFO contrast: " + (wide.solid + wide.overPixels) + " text elements measured at 1440, " + wide.overPixels + " of them from pixels" + (wide.unmeasured ? "; " + wide.unmeasured + " not measured (gradient-filled, blended or covered text): check those by eye" : ""));
   lines.push("INFO spacing: " + Math.round(wide.onBase * 100) + "% of " + wide.spacingCount + " values on a " + wide.base + "px base");
   lines.push("INFO type: " + wide.fonts.length + " typefaces (" + wide.fonts.join(", ") + "), sizes " + wide.sizes.join(", "));
   lines.push("INFO image and text: pictures cover " + Math.round(wide.picture * 100) + "% of the page, " + wide.words + " words");
@@ -344,9 +468,57 @@ const tokensOf = () => {
   process.exit(fails ? 1 : 0);
 })().catch((e) => { console.error(e.message); process.exit(2); });
 
+// Text over a picture: hide the glyphs (only their fill, so currentColor keeps working),
+// capture, then measure each line of text against the worst tenth of the pixels behind it.
+async function sampleContrast(browser, page, texts) {
+  await page.addStyleTag({ content: "*,*::before,*::after{-webkit-text-fill-color:transparent!important;-webkit-text-stroke:0!important;text-shadow:none!important;text-decoration-color:transparent!important;transition:none!important;animation:none!important;caret-color:transparent!important}" });
+  await page.waitForTimeout(100);
+  const data = (await page.screenshot({ fullPage: true })).toString("base64");
+  const blank = await browser.newPage();
+  const found = await blank.evaluate(async ({ data, texts }) => {
+    const img = new Image();
+    img.src = "data:image/png;base64," + data;
+    await img.decode();
+    const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    const lum = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    const worst = new Map();
+    for (const t of texts) {
+      const ratios = [];
+      for (const r of t.rects) {
+        // Inset, so the sample stays behind the glyphs and off the edges of the line box.
+        const y = Math.round(r.y + r.h * 0.15), x = Math.round(r.x), w = Math.round(r.w), h = Math.round(r.h * 0.7);
+        if (w < 1 || h < 1 || x >= img.width || y >= img.height) continue;
+        const c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        const g = c.getContext("2d", { willReadFrequently: true });
+        g.drawImage(img, -x, -y);
+        const d = g.getImageData(0, 0, w, h).data;
+        const stride = Math.max(1, Math.floor(Math.sqrt((w * h) / 1500)));
+        for (let py = 0; py < h; py += stride) for (let px = 0; px < w; px += stride) {
+          const i = (py * w + px) * 4;
+          const mix = (fg, bg) => fg * t.alpha + bg * (1 - t.alpha);
+          const b = lum(d[i], d[i + 1], d[i + 2]), f = lum(mix(t.fg.r, d[i]), mix(t.fg.g, d[i + 1]), mix(t.fg.b, d[i + 2]));
+          ratios.push((Math.max(f, b) + 0.05) / (Math.min(f, b) + 0.05));
+        }
+      }
+      if (!ratios.length) continue;
+      ratios.sort((a, b) => a - b);
+      const ratio = ratios[Math.floor(ratios.length * 0.1)];
+      const large = t.px >= 24 || (t.px >= 18.66 && t.weight >= 700);
+      const key = t.name + " " + t.hex;
+      if (ratio < (large ? 3 : 4.5) && (!worst.has(key) || worst.get(key).ratio > ratio)) worst.set(key, { ratio, px: t.px });
+    }
+    return [...worst].map(([k, v]) => k + " over a gradient or image is " + v.ratio.toFixed(2) + ":1 at " + v.px + "px, in the worst tenth of the pixels behind it");
+  }, { data, texts: texts.map((t) => ({ fg: t.fg, alpha: t.alpha, hex: t.hex, name: t.name, px: t.px, weight: t.weight, rects: t.rects })) });
+  await blank.close();
+  return found;
+}
+
 async function measure_(browser, target, width) {
   const page = await open(browser, target, width);
   const result = await page.evaluate(measure);
+  result.overPixels = result.pixelTexts.length;
+  if (result.overPixels) result.contrast.push(...await sampleContrast(browser, page, result.pixelTexts));
   await page.close();
   return result;
 }

@@ -64,6 +64,88 @@ check "validate: refuses an unfinished handbook" "bash $s/validate.sh $f/good-pa
 cp $f/good-page.html $f/brand-logo.svg $f/brand-photo.svg "$tmp/"; touch -t 200001010000 "$tmp/good-page.html"
 check "validate: refuses a handbook newer than the build" "bash $s/validate.sh $tmp/good-page.html $tmp/v7 --style $f/good-STYLE.md | grep -q '^FAIL style-after-build'"
 
+bash $s/validate.sh $f/over-pictures.html "$tmp/v8" >"$tmp/pics.txt" 2>&1
+check "contrast: catches pale text on a gradient" "grep -q '^FAIL contrast: p.pale-text.*over a gradient' $tmp/pics.txt"
+check "contrast: passes white text on a deep gradient" "! grep -q 'deep-text' $tmp/pics.txt"
+check "contrast: says what it couldn't measure" "grep -q '^INFO contrast:.*1 not measured' $tmp/pics.txt"
+
+# Build order: a project with its own stylesheet, so the page file can stay untouched.
+b="$tmp/build"; mkdir -p "$b"
+cat >"$b/STYLE.md" <<'EOF'
+# Style: Test
+
+> A test.
+
+## Idea
+A small page for testing the build order, with a dark ink on a pale ground.
+
+## Principles
+- Plain, not decorated.
+
+## Decisions
+
+### D1. Ink on a pale ground
+- **Decision:** ink #111111 on paper #fefefe, text at 16px, 32px and 48px, space at 8px, 16px and 32px.
+- **Why:** this test page has to read at once, so the darkest ink on the palest ground leaves nothing to check by eye.
+- **Instead of:** grey on white, which would need a contrast check of its own.
+- **Breaks if removed:** the test page has no style to compare against.
+- **Trade-off:** it looks severe.
+- **Source:** brief
+- **Reviewed:** kept
+
+## Tokens
+```css
+:root {
+  --color-ink: #111111; /* D1 */
+  --color-paper: #fefefe; /* D1 */
+  --text-body: 16px; /* D1 */
+  --text-title: 32px; /* D1 */
+  --text-big: 48px; /* D1 */
+  --space-s: 8px; /* D1 */
+  --space-m: 16px; /* D1 */
+  --space-l: 32px; /* D1 */
+}
+```
+EOF
+cat >"$b/page.html" <<'EOF'
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test</title><link rel="stylesheet" href="styles.css"></head><body><h1>Tide tables</h1><p>Daily tide times.</p></body></html>
+EOF
+css() { printf ':root{--color-ink:#111111;--color-paper:#fefefe;--text-body:16px;--text-title:32px;--text-big:48px;--space-s:8px;--space-m:16px;--space-l:32px}body{margin:0;padding:var(--space-l);color:var(--color-ink);background:var(--color-paper);font:var(--text-body)/1.5 Georgia,serif}h1{font-size:var(--text-title);margin:0 0 var(--space-m)}p{margin:0}%s\n' "$1" >"$b/styles.css"; }
+vb() { bash $s/validate.sh "$b/page.html" "$b/out" --style "$b/STYLE.md" 2>&1; }
+css ""; touch -t 200001010000 "$b/STYLE.md"
+vb >"$tmp/b1.txt"
+check "build: a page built from its handbook passes" "grep -q '^Result: PASS' $tmp/b1.txt"
+sed -i.bak 's/this test page has to read at once/this test page must read straight away/' "$b/STYLE.md"
+vb >"$tmp/b2.txt"
+check "build: rewording a reason needs no rebuild" "grep -q '^Result: PASS' $tmp/b2.txt"
+sed -i.bak 's/--color-ink: #111111/--color-ink: #222222/' "$b/STYLE.md"
+touch "$b/page.html" "$b/styles.css"
+vb >"$tmp/b3.txt"
+check "build: touching files doesn't clear a changed handbook" "grep -q '^FAIL style-after-build' $tmp/b3.txt"
+check "build: a token with another value is drift" "grep -q '^FAIL token-drift: --color-ink' $tmp/b3.txt"
+sed -i.bak 's/--color-ink:#111111/--color-ink:#222222/' "$b/styles.css"
+vb >"$tmp/b4.txt"
+check "build: changing only the stylesheet counts as a rebuild" "grep -q '^Result: PASS' $tmp/b4.txt"
+css "h1{font-size:37px}"; sed -i.bak 's/--color-ink:#111111/--color-ink:#222222/' "$b/styles.css"
+vb >"$tmp/b5.txt"
+check "tokens: catches a text size off the scale" "grep -q '^FAIL off-token: text size 37px' $tmp/b5.txt"
+css ""; sed -i.bak 's/--color-ink:#111111/--color-ink:#222222/' "$b/styles.css"
+sed -i.bak 's#<h1>#<svg width="40" height="40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="\#ff00aa"/></svg><h1>#' "$b/page.html"
+vb >"$tmp/b6.txt"
+check "tokens: catches a drawing color off the handbook" "grep -q '^FAIL off-token: color #ff00aa in a drawing' $tmp/b6.txt"
+sed -i.bak 's#<svg.*</svg>##' "$b/page.html"
+css "main{padding:13px 27px;margin:19px 23px}section{padding:11px;margin:29px}"
+sed -i.bak 's/--color-ink:#111111/--color-ink:#222222/' "$b/styles.css"
+css2="$(cat "$b/styles.css")"
+sed -i.bak 's/<h1>/<main><section><h1>/; s#</p>#</p></section></main>#' "$b/page.html"
+sed -i.bak 's/ink #111111 on paper #fefefe/a gradient, ink #111111 on paper #fefefe/; s/\*\*Instead of:\*\* grey on white/**Instead of:** grey on white/' "$b/STYLE.md"
+printf '%s\nbody{background-image:linear-gradient(#fefefe,#fefefe)}\n' "$css2" >"$b/styles.css"
+vb >"$tmp/b7.txt"
+check "patterns: a decision that uses the pattern reasons it" "! grep -q '^FAIL unreasoned' $tmp/b7.txt"
+sed -i.bak 's/a gradient, ink #111111/never a gradient; ink #111111/' "$b/STYLE.md"
+vb >"$tmp/b8.txt"
+check "patterns: a decision that rejects it doesn't" "grep -q '^FAIL unreasoned:.*gradient' $tmp/b8.txt"
+
 check "sync: skill copies match shared/" "scripts/sync-shared.sh --check"
 
 [ "$fails" = 0 ] && echo "all passed" || { echo "$fails failed"; exit 1; }
