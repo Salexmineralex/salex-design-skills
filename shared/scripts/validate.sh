@@ -11,7 +11,8 @@
 # FAIL (disqualifies; exit 1):
 #   contrast, typefaces (more than 3), type-scale (near-duplicate sizes, more than 10
 #   sizes), line-length (over 85 characters), touch-target (under 24px), sideways-scroll,
-#   empty-box, broken-image, focus (no visible ring), text-removed, text-added,
+#   control-cut-off (a control cut through by its box, or out of view until scrolled
+#   sideways), empty-box, broken-image, focus (no visible ring), text-removed, text-added,
 #   text-hidden, off-token (colors, drawings, fonts and sizes), token-drift (the page
 #   gives a token another value), unreasoned (a pattern with no decision that uses it),
 #   style-lint, style-after-build
@@ -177,12 +178,34 @@ const measure = () => {
     if (tops.size >= 3 && chars / tops.size > 85) longLines.push(name(el) + " about " + Math.round(chars / tops.size) + " characters a line");
   }
 
-  const small = [], tight = [];
+  const small = [], tight = [], cut = [];
+  // The visible part of a box that clips or scrolls its content, inside its borders.
+  const viewOf = (box) => { const b = box.getBoundingClientRect(); return { left: b.left + box.clientLeft, right: b.left + box.clientLeft + box.clientWidth, top: b.top + box.clientTop, bottom: b.top + box.clientTop + box.clientHeight }; };
   for (const el of document.querySelectorAll('a[href], button, input:not([type="hidden"]), select, textarea, [role="button"]')) {
     if (!seen(el) || (el.matches("a") && el.closest("p, li") && !el.matches("nav a, nav *"))) continue;
     const r = el.getBoundingClientRect(), side = Math.min(r.width, r.height);
     if (side < 24) small.push(name(el) + " " + Math.round(r.width) + "x" + Math.round(r.height));
     else if (side < 44) tight.push(name(el));
+    // A control a box cuts through, or keeps out of view until someone scrolls it sideways.
+    // Measured where it sits at rest: earlier steps scroll boxes to bring text into view.
+    let sx = 0, sy = 0;
+    for (let box = el.parentElement; box && box !== document.body; box = box.parentElement) {
+      const s = cs(box);
+      if (!/auto|scroll|hidden|clip/.test(s.overflowX + s.overflowY)) continue;
+      sx += box.scrollLeft; sy += box.scrollTop;
+      const r = { left: el.getBoundingClientRect().left + sx, right: el.getBoundingClientRect().right + sx, top: el.getBoundingClientRect().top + sy, bottom: el.getBoundingClientRect().bottom + sy };
+      const v = viewOf(box);
+      const outX = Math.max(0, r.right - v.right - 1) + Math.max(0, v.left - r.left - 1);
+      const outY = /hidden|clip/.test(s.overflowY) ? Math.max(0, r.bottom - v.bottom - 1) + Math.max(0, v.top - r.top - 1) : 0;
+      if (outX + outY > 0) {
+        // Wholly hidden in a box that clips on purpose (a carousel, a closed drawer) is a
+        // design; wholly hidden in a box that scrolls is a control nobody finds.
+        const whole = r.left >= v.right || r.right <= v.left || r.top >= v.bottom || r.bottom <= v.top;
+        if (!whole) cut.push(name(el) + " is cut off inside " + name(box));
+        else if (/auto|scroll/.test(s.overflowX)) cut.push(name(el) + " is out of view inside " + name(box));
+        break;
+      }
+    }
   }
 
   const spacing = [];
@@ -243,9 +266,14 @@ const measure = () => {
   const drawnColors = {};
   const solidColor = (v) => { if (/^rgb\(/.test(v)) { const c = color(v); if (c.a === 1) drawnColors[hex(c)] = 1; } };
   for (const el of document.querySelectorAll("svg *")) {
-    if (el.closest('[data-specimen], [data-placeholder], [class*="logo" i], [id*="logo" i], [aria-label*="logo" i]') || !el.checkVisibility({ checkVisibilityCSS: true })) continue;
+    if (el.closest('[data-specimen], [data-placeholder], [class*="logo" i], [id*="logo" i], [aria-label*="logo" i]') || !(el.matches("stop") ? el.closest("svg") : el).checkVisibility({ checkVisibilityCSS: true })) continue;
     const s = cs(el);
-    solidColor(s.fill); solidColor(s.stroke); solidColor(s.stopColor);
+    // Only what is painted: fill on shapes that have an inside, stroke where it has width,
+    // stop colors on gradient stops. Groups and other containers report the default black.
+    if (el.closest("clipPath, mask")) continue;
+    if (el.matches("path, rect, circle, ellipse, polygon, polyline, text, tspan, textPath") && !/^url\(/.test(s.fill) && parseFloat(s.fillOpacity) > 0) solidColor(s.fill);
+    if (el.matches("path, rect, circle, ellipse, line, polyline, polygon, text, tspan, textPath") && parseFloat(s.strokeWidth) > 0 && parseFloat(s.strokeOpacity) > 0) solidColor(s.stroke);
+    if (el.matches("stop")) solidColor(s.stopColor);
   }
   for (const el of all) {
     if (specimen(el)) continue;
@@ -268,7 +296,7 @@ const measure = () => {
   return {
     sideways: document.documentElement.scrollWidth - innerWidth,
     contrast: [...contrast].map(([k, v]) => k + " is " + v), pixelTexts, solid, unmeasured, fonts: Object.keys(fonts), sizes: Object.keys(sizes).map(Number).sort((a, b) => a - b),
-    longLines, small, tight: tight.length, base: bases[0][0], onBase: bases[0][1], spacingCount: spacing.length,
+    longLines, small, tight: tight.length, cut, base: bases[0][0], onBase: bases[0][1], spacingCount: spacing.length,
     empties: [...new Set(empties)], broken, placeholders, patterns: [...patterns], colors: Object.keys(colors), drawnColors: Object.keys(drawnColors), spacing,
     picture: picture / Math.max(1, document.documentElement.scrollWidth * document.documentElement.scrollHeight),
     words: document.body.innerText.trim().split(/\s+/).length, blocks,
@@ -381,6 +409,8 @@ const buildOf = async (page, target) => {
   if (near.length >= 3 || wide.sizes.length > 10) fail("type-scale", wide.sizes.length + " sizes: " + wide.sizes.join(", "), was((s) => s.sizes.length > 10));
   for (const l of [...new Set(wide.longLines)].slice(0, 5)) fail("line-length", l);
   for (const l of [...new Set(phone.small)].slice(0, 8)) fail("touch-target", l + " at 375", was((s, p) => p.small.includes(l)));
+  for (const [w, m, s] of [[1440, wide, source], [375, phone, sourcePhone]])
+    for (const l of [...new Set(m.cut)].slice(0, 8)) fail("control-cut-off", l + " at " + w + ": a control must be whole and in view without scrolling sideways", s && s.cut.includes(l));
   for (const e of wide.empties.concat(phone.empties).filter((v, i, a) => a.indexOf(v) === i)) fail("empty-box", e + " has nothing in it");
   for (const b of wide.broken) fail("broken-image", b);
   const focusPage = await open(browser, url, 1440);

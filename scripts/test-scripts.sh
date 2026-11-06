@@ -150,6 +150,15 @@ sed -i.bak 's#<h1>#<svg width="40" height="40" aria-hidden="true"><circle cx="20
 vb >"$tmp/b6.txt"
 check "tokens: catches a drawing color off the handbook" "grep -q '^FAIL off-token: color #ff00aa in a drawing' $tmp/b6.txt"
 sed -i.bak 's#<svg.*</svg>##' "$b/page.html"
+# A drawing in the handbook's ink, with a group and a line, which report a default black fill.
+sed -i.bak 's#<h1>#<svg width="40" height="40" aria-hidden="true"><g><line x1="2" y1="2" x2="38" y2="38" stroke="\#111111" stroke-width="2"/><circle cx="20" cy="20" r="18" fill="none" stroke="\#111111"/></g></svg><h1>#' "$b/page.html"
+vb >"$tmp/b6b.txt"
+check "tokens: groups and lines aren't painted black" "! grep -q '^FAIL off-token: color #000000' $tmp/b6b.txt"
+sed -i.bak 's#<svg.*</svg>##' "$b/page.html"
+sed -i.bak 's#<h1>#<svg width="40" height="40" aria-hidden="true"><defs><linearGradient id="g"><stop offset="0" stop-color="\#ff00aa"/><stop offset="1" stop-color="\#111111"/></linearGradient></defs><rect width="40" height="40" fill="url(\#g)"/></svg><h1>#' "$b/page.html"
+vb >"$tmp/b6c.txt"
+check "tokens: catches a gradient stop off the handbook" "grep -q '^FAIL off-token: color #ff00aa in a drawing' $tmp/b6c.txt"
+sed -i.bak 's#<svg.*</svg>##' "$b/page.html"
 css "main{padding:13px 27px;margin:19px 23px}section{padding:11px;margin:29px}"
 sed -i.bak 's/--color-ink:#111111/--color-ink:#222222/' "$b/styles.css"
 css2="$(cat "$b/styles.css")"
@@ -161,6 +170,15 @@ check "patterns: a decision that uses the pattern reasons it" "! grep -q '^FAIL 
 sed -i.bak 's/a gradient, ink #111111/never a gradient; ink #111111/' "$b/STYLE.md"
 vb >"$tmp/b8.txt"
 check "patterns: a decision that rejects it doesn't" "grep -q '^FAIL unreasoned:.*gradient' $tmp/b8.txt"
+
+cat >"$tmp/cut.html" <<'EOF'
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Positions</title>
+<style>body{margin:0;padding:16px;font:16px/1.5 Georgia,serif;color:#111;background:#fff}.box{overflow-x:auto;border:1px solid #111}td{padding:8px 16px;white-space:nowrap}button{min-height:44px;padding:0 16px;font:inherit}</style></head>
+<body><h1>Positions</h1><div class="box"><table><tr><td>Bitcoin</td><td>0.25</td><td>$61,200.00</td><td>+$812.40</td><td><button>Close</button></td></tr></table></div></body></html>
+EOF
+bash $s/validate.sh "$tmp/cut.html" "$tmp/v9" >"$tmp/cut.txt" 2>&1
+check "controls: a button cut off on a phone fails" "grep -qE '^FAIL control-cut-off: button is (cut off|out of view) inside div.box at 375' $tmp/cut.txt"
+check "controls: a button that fits at 1440 doesn't" "! grep -q 'control-cut-off:.*at 1440' $tmp/cut.txt"
 
 check "sync: skill copies match shared/" "scripts/sync-shared.sh --check"
 

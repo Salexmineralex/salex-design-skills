@@ -115,7 +115,7 @@ const [url, out, width, frame] = process.argv.slice(2);
       //     table on a phone). Allowed, but with no visible hint it reads as cut off,
       //     so flag it for a deliberate decision.
       if (/auto|scroll/.test(s.overflowX) && el.scrollWidth > el.clientWidth + 1)
-        found.push(name(el) + " scrolls sideways inside itself (" + (el.scrollWidth - el.clientWidth) + "px hidden): hide columns or show that it scrolls");
+        found.push(name(el) + " scrolls sideways inside itself (" + (el.scrollWidth - el.clientWidth) + "px hidden): make it fit, or show that it scrolls");
       // 3. Overlapping neighbours in a flex or grid row.
       if (/flex|grid/.test(s.display)) {
         const kids = [...el.children].filter((k) => !skip(k) && cs(k).position !== "absolute" && cs(k).position !== "fixed" && visible(k.getBoundingClientRect()));

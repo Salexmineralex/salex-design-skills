@@ -23,7 +23,8 @@ What it does:
 - **The source's problems aren't inherited.** With `--source`, what the original already fails still fails, marked "also in the source".
 - **Patterns need a decision.** A gradient, emoji, step sequence or card grid passes only if a decision in `STYLE.md` says it uses one and why. Rejecting it in "Instead of" doesn't count. The form isn't the problem; the missing reason is.
 - **Contrast is measured over pictures too.** Over a gradient or image it reads the real pixels behind each line. What it can't measure (gradient-filled, blended or covered text), it counts in the report: check those by eye.
-- **The page must match the handbook.** A token with another value is `token-drift`. Colors in drawings and gradients, and text sizes, must be in `## Tokens`. Spacing off the scale is a warning.
+- **The page must match the handbook.** A token with another value is `token-drift`. Colors in drawings and gradients, and text sizes, must be in `## Tokens`. Only painted colors count: a drawing's groups and lines don't report a black they never paint. Spacing off the scale is a warning.
+- **Controls stay whole.** A button or link that its box cuts through, or keeps out of view until someone scrolls the box sideways, is `control-cut-off`, even when the box scrolls. A wide table may scroll on a phone; its controls must fit. Hiding columns changes the page, so it isn't the fix in a looks-only restyle: reflow the row.
 - **The handbook comes first.** If its decisions or tokens change and the page and stylesheets don't, that's `style-after-build`, and touching files doesn't clear it. Rewording a reason needs no rebuild. Don't delete `build-record.json` from the output folder.
 
 A control that was already dead before a looks-only change isn't caused by the restyle: tell the user. Look at the captures yourself too, and press Tab through the page: numbers miss things.
