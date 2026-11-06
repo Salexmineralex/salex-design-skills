@@ -34,7 +34,7 @@ What this is, for whom, and the tension, in a few lines. Self-sufficient: the re
 - **Breaks if removed:** what goes wrong without it.
 - **Trade-off:** what this costs, accepted.
 - **Source:** brief | moodboard <file> | user answer Q1 | brand <file> | handbook <rule>
-- **Reviewed:** kept
+- **Reviewed:** kept, or kept (Q1) when it rests on an answer
 
 ## Questions asked
 - **Q1:** the question, the options, the answer. Authoritative; cited as Source.
@@ -51,7 +51,7 @@ Cover what someone needs in order to build: type, color by role, space and densi
 
 ## The why-reviewer
 
-**Before a decision is kept, it goes past the reviewer.** Start a short-lived sub-agent on your cheapest model, in the foreground, one per decision or small group. If your tool can't, ask the same questions yourself, one at a time, and say so in the file's Idea section. Give it only the brief, the mood board notes and the entry:
+**Before a decision is kept, it goes past the reviewer.** Start a short-lived sub-agent on your cheapest model, in the foreground, one per decision or small group. If your tool can't, ask the same questions yourself, one at a time, and say so in the file's Idea section. Give it only the brief, the mood board notes, the entry, and the settled facts the entry leans on: the recorded answer to any question it cites, values it takes from other decisions (quote those lines), and measurements you made (a contrast ratio, a width). Nothing else: not your own case for the decision.
 
 ```
 You're an anti-slop reviewer. Most reasons are written to sound good, so assume this one
@@ -59,6 +59,8 @@ is filler until its own words prove otherwise. You judge the reason, never the s
 form is allowed if its reason serves the idea.
 
 The idea: <from the brief>
+Settled facts: <recorded answers, lines from other decisions and measurements the entry
+relies on, or "none">. These are decided: don't test them, and don't ask about them again.
 The decision: <the entry>
 
 Run these four tests on the Why, in order. A reason doesn't have to rule out every option
@@ -74,7 +76,7 @@ in the world. It has to make this option better than the one in "Instead of".
    user's own idea is a fine reason when the Why says what the decision does for it.
 4. OPEN: does the Why admit that something is undecided, or need a fact the idea, brief
    and mood board don't give, where a different answer would change the decision? Fail.
-   A reasonable reading of the brief isn't open.
+   A reasonable reading of the brief isn't open, and neither is a settled fact.
 
 Reply in exactly this form:
 SWAP: pass or fail, in a few words
@@ -88,7 +90,8 @@ BACK and say what's missing. If 4 fails, ASK and say what only the user can answ
 
 - **KEEP:** read its WEAKEST line first. If that phrase isn't doing any work, cut it or back it up, then write `Reviewed: kept`. If every decision comes back KEEP, or none does, the reviewer isn't working: say so in your notes.
 - **BACK:** find the real reason, or change the decision. Often there was no reason, and that was the slop. A rewrite goes past a fresh reviewer.
-- **ASK:** go to "Asking the user".
+- **ASK:** first check whether the fact is already settled: in another decision, a recorded answer, or something you can measure. If it is, write it into the Why, give it to a fresh reviewer as a settled fact, and don't ask. Otherwise go to "Asking the user".
+- **ASK about something already answered:** never ask the user twice. The answer stands: write `Reviewed: kept (Q1)`, naming the answer. If the reviewer still fails SWAP, CAUSE or CHOICE with the answer in front of it, that's a BACK: the Why doesn't say what the answer does for the idea.
 
 **Brand mode:** "the owner asked to keep it" is a source, not a reason. One question covers every kept value: ask why the owner wants this look, and cite the answer. What you changed or added still needs its own why.
 
@@ -102,6 +105,6 @@ Ask with the question tool: one specific question about one decision, with the p
 
 ## Finished means
 
-`python3 <skill folder>/scripts/why-lint.py STYLE.md` passes. It checks the form: sections in order, every field present, no fashion words in a Why, nothing unresolved, no more than three questions, every token tracing to a decision. Passing doesn't make the reasons good. The reviewer tests the argument before anything exists; only someone looking at the result can tell whether it shows.
+`python3 <skill folder>/scripts/why-lint.py STYLE.md` passes. It checks the form: sections in order, every field present, no fashion words in a Why, nothing unresolved, `Reviewed` exactly `kept` or `kept (Qn)` with Qn recorded, no more than three questions, every token tracing to a decision. Passing doesn't make the reasons good. The reviewer tests the argument before anything exists; only someone looking at the result can tell whether it shows.
 
 Read it once as a stranger. Could you build from this without asking anything? Fix what you'd have to ask.

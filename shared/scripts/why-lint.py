@@ -5,7 +5,8 @@ Usage: python3 why-lint.py STYLE.md
 
 It reads the form, not the taste: the sections are in order, every decision has its
 reason, source and trade-off, none rests on fashion, nothing is unresolved, no more
-than three questions went to the user, and every token traces to a decision.
+than three questions went to the user, every decision is kept plainly or on a recorded
+answer ("kept" or "kept (Q1)"), and every token traces to a decision.
 
 Prints one line per problem. Exits 1 if there are any, 0 if the handbook is finished.
 """
@@ -55,6 +56,7 @@ def check(text):
         problems.append("## Tokens must be the last section")
 
     ids = set()
+    cited = []
     entries = re.split(r"^### ", body.get("Decisions", ""), flags=re.M)[1:]
     if "Decisions" in body and not entries:
         problems.append("## Decisions has no entries (### D1. ...)")
@@ -82,13 +84,22 @@ def check(text):
         source = fields.get("Source", "")
         if source and not re.match(SOURCES, source, flags=re.I):
             problems.append(f"{title}: Source must be the brief, the moodboard, a user answer, the brand or the handbook")
-        reviewed = fields.get("Reviewed", "").lower()
+        reviewed = fields.get("Reviewed", "").strip().rstrip(".").lower()
+        kept = re.fullmatch(r"kept(?: \(q(\d+)\))?", reviewed)
         if reviewed and not reviewed.startswith("kept"):
             problems.append(f"{title}: unresolved; ask the user or go back to the brief before building")
+        elif reviewed and not kept:
+            problems.append(f'{title}: Reviewed must be "kept" or "kept (Q1)"; move the history to your notes')
+        elif kept and kept.group(1):
+            cited.append((title, kept.group(1)))
         if "unresolved" in why.lower():
             problems.append(f"{title}: Why is unresolved")
 
     questions = re.findall(r"^- \*\*Q\d+", body.get("Questions asked", ""), flags=re.M)
+    asked = {q[len("- **Q"):] for q in questions}
+    for title, n in cited:
+        if n not in asked:
+            problems.append(f"{title}: kept on Q{n}, but ## Questions asked has no Q{n}")
     if len(questions) > MAX_QUESTIONS:
         problems.append(f"{len(questions)} questions asked; the limit is {MAX_QUESTIONS}. The brief is empty: go back to it")
 

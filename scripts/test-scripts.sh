@@ -24,6 +24,22 @@ check "why-lint: catches a fashion reason" "grep -q 'rests on fashion' $tmp/lint
 check "why-lint: catches an unresolved decision" "grep -q 'unresolved' $tmp/lint.txt"
 check "why-lint: catches tokens not last" "grep -q 'must be the last' $tmp/lint.txt"
 check "why-lint: catches a missing number" "grep -q 'needs a number' $tmp/lint.txt"
+variant() { # variant <out> <reviewed text> [question line]: good-STYLE.md with its first Reviewed changed
+  python3 - "$f/good-STYLE.md" "$1" "$2" "${3:-}" <<'PY'
+import sys
+src, out, reviewed, question = sys.argv[1:]
+text = open(src).read().replace("- **Reviewed:** kept", "- **Reviewed:** " + reviewed, 1)
+if question:
+    text = text.replace("## Tokens", "## Questions asked\n" + question + "\n\n## Tokens", 1)
+open(out, "w").write(text)
+PY
+}
+variant "$tmp/history.md" "kept, after six reviews"
+check "why-lint: kept with a history isn't kept" "python3 $s/why-lint.py $tmp/history.md | grep -q 'must be \"kept\"'"
+variant "$tmp/onq.md" "kept (Q2)"
+check "why-lint: kept on a missing answer fails" "python3 $s/why-lint.py $tmp/onq.md | grep -q 'has no Q2'"
+variant "$tmp/onq-ok.md" "kept (Q2)" "- **Q2:** which lettering, rough or smooth? Answer: smooth."
+check "why-lint: kept on a recorded answer passes" "python3 $s/why-lint.py $tmp/onq-ok.md"
 
 bash $s/read-tokens.sh $f/brand.html "$tmp/x" >"$tmp/read.log" 2>&1
 check "read-tokens: runs" "test -s $tmp/x/tokens.json && test -s $tmp/x/page-1440.png && test -s $tmp/x/page-375.png"
