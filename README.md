@@ -20,11 +20,11 @@ Needs Python 3 and Node (the screenshot helper uses Playwright, which downloads 
 
 **The order:** document first, design second. Nothing gets built until `STYLE.md` is finished, because a reason written after the design is an excuse.
 
-1. **Your idea** (`/taste-brief`): short, with its tension. If the idea is thin, it stops and asks (audience, one feeling, what to borrow, what to avoid, what must be true of the product) in one batch of at most five. It does not invent the answers.
-2. **Two or three directions** (`/taste-directions`), shown as small real screens, each with a named signature move. You pick (at most one more question).
+1. **Your idea** (`/taste-brief`): short, with its tension. If the idea is thin, it stops and asks in one batch of at most five. The batch includes type character (rendered samples, never “which font”), color vibe, imagery and what you would hate to see, when you have not already said. Each question accepts “I don’t know, you decide”; that choice is logged as an assumption, not as your why. It does not invent the answers.
+2. **Two or three directions** (`/taste-directions`), shown as small real screens, each with a named signature move. They differ in material, color and type from projects already in the repo, unless you asked for the match. You pick (at most one more question).
 3. **The handbook** (`/taste-why`): a Signature, then one decision at a time, each past an anti-slop reviewer that judges the reason and never the style. “The source already did it” is not a why unless this is brand mode.
 4. **The build:** one sample page, or your app if you ask, only from `STYLE.md`.
-5. **Measurement** (`/taste-validate`): objective checks and captures at 1440 and 375, then a look at whether the signature shows — no score.
+5. **Measurement** (`/taste-validate`): objective checks and captures at 1440 and 375, then a look at whether the signature shows — no score. A landing hero has to dominate the first viewport. The shared document default (beige paper, mono, hairline rules, small type, no imagery) fails unless you asked for it.
 
 Only you start it: type `/taste`, optionally with your idea.
 
@@ -50,7 +50,7 @@ The one named move the page must show, with hierarchy and how pictures stay whol
 
 ## When it asks you
 
-If the idea is thin, it asks before it writes any why: up to five questions in one batch at the brief (who it is for, the one feeling, what to borrow, what to avoid, what must be true of the product), plus at most one at the direction pick. Last resort means only what cannot be inferred from files and your words. It does not invent stand-in answers. Your answer goes into the brief and into `STYLE.md` as the source of that decision. An assumption from a file is logged as an assumption, never dressed as a why.
+If the idea is thin, it asks before it writes any why: up to five questions in one batch at the brief. Type character, color vibe, imagery and what you would hate to see are in that batch when the brief does not already answer them, ahead of feeling, product truth and what to borrow once the five slots fill. Plus at most one question at the direction pick. Last resort means only what cannot be inferred from files and your words. It does not invent stand-in answers. Your answer goes into the brief and into `STYLE.md` as the source of that decision. “I don’t know, you decide” is logged as an assumption, never as your why. An assumption from a file is the same: an assumption, never dressed as a why.
 
 ## How results are judged
 

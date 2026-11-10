@@ -24,9 +24,11 @@ Each one is a different answer to the brief’s tension, not a variation in colo
 
 Write down the look a model would reach for first on this kind of product (SaaS: Inter, three cards, gradient headline; ecommerce: white card grid; app landing: phone mock and two store buttons). **Do not offer that default** unless the brief gives a reason to use it. Name it in your notes as the rejected default. No two directions share a type pairing or a main hue.
 
+**Differ from the other projects in this repo.** Before drawing, read every `STYLE.md` under `examples/` and any other `STYLE.md` the run can see. Note each one’s material, color temperature and value (warm or cool, light or dark), and type family (serif, sans, mono, script). Each direction here must differ from all of those in at least two of those three, unless a recorded **owner** answer asks for that material, temperature or family and says why. An assumption, including “I don’t know, you decide”, does not count. Do not offer the shared document default — warm off-white or beige paper, monospace-led type, hairline rules, small body text, no imagery — unless an owner answer asks for that cluster. It is not banned. It is a default, and a default needs their why.
+
 ## Show them
 
-Build `style/directions.html`: each direction as a small real screen of this product, using its real words and assets, or a marked placeholder where an asset is missing. These are sketches to choose from, not the build. The signature move must be visible in the sketch. Show the page in the chat if your tool can, otherwise open it in the browser.
+Build `style/directions.html`: each direction as a small real screen of this product, using its real words and assets, or a marked placeholder where an asset is missing. These are sketches to choose from, not the build. The signature move must be visible in the sketch. If type character was still open, each sketch renders its own character (the same four, or the one they picked) as real type, not a font name in a caption. Show the page in the chat if your tool can, otherwise open it in the browser.
 
 ## Ask (at most one question)
 

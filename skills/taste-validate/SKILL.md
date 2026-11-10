@@ -38,6 +38,8 @@ After the numbers pass, look at the 1440 and 375 captures against `STYLE.md`'s *
 - **Cropped decoration.** A wave, poster or product shot is sliced by `overflow: hidden` as the way to pass overflow. Pictures stay whole, or the layout changes.
 - **44px chrome.** Buttons look like isolated accessibility blocks, not a system that shares height with their row.
 - **Safe default.** The page is the layout a model ships first for this product type (SaaS: Inter, three cards, gradient headline; ecommerce: white grid; app: phone mock + store buttons) and the brief did not ask for that default. Name what is default, in words, and reject it.
+- **Document default.** Warm off-white or beige ground, monospace-led type, hairline rules, small body text, and no imagery. `validate.sh` fails this as `document-default` unless an owner answer (not “I don’t know, you decide”) asks for that cluster. It is not banned. It needs their why.
+- **No hero.** On a landing (`<body data-landing>`, or the handbook calls it a landing), nothing in the first viewport at 1440 or at 375 takes at least a fifth of that viewport. The dominant element is large type, an image, a product or an illustration. `validate.sh` fails this as `hero-scale`. A page of small text and empty space is a document.
 
 Write what you saw into the validate folder as `look.md`: three to eight lines, no score. If you reject, say which bullet and why.
 

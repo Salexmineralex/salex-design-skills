@@ -16,11 +16,11 @@ disable-model-invocation: true
 
 **Document first, design second.** No page, stylesheet or screen gets built until `STYLE.md` is finished. A rationale written after the design exists is an excuse, not a reason.
 
-1. **Idea.** Follow `taste-brief`. If the idea is thin, **stop at the question gate** and wait. Do not invent answers.
-2. **Directions.** Follow `taste-directions`. The user picks one. (Their cards are sketches to choose from, not a build.) At most one question: which they like.
+1. **Idea.** Follow `taste-brief`. If the idea is thin, **stop at the question gate** and wait. Do not invent answers. The batch is still at most five, and it includes type character, color vibe and imagery when the brief did not already decide them. “I don’t know, you decide” is a delegation: the choice becomes an assumption, not their why.
+2. **Directions.** Follow `taste-directions`. The user picks one. (Their cards are sketches to choose from, not a build.) At most one question: which they like. Directions differ in material, color temperature and type family from other projects already in the repo, unless an owner answer asks for the match.
 3. **Handbook.** Follow `taste-why`: write `STYLE.md` one decision at a time, including a **Signature**, each one reviewed before it's kept. It must pass `why-lint.py`. A Why that is only “the source already did it” fails unless this run is brand-locked.
 4. **Build.** Only now, and only from `STYLE.md`'s tokens and decisions:
-   - **No app:** one page, `style/sample.html`, of the kind this product really needs, with real content and the assets in `style/assets/`, or marked placeholders, at desktop and phone width. One page is enough. The signature move must be visible at 1440 and at 375. Pictures stay whole. 44px is a tap floor, not the look of the buttons.
+   - **No app:** one page, `style/sample.html`, of the kind this product really needs, with real content and the assets in `style/assets/`, or marked placeholders, at desktop and phone width. One page is enough. The signature move must be visible at 1440 and at 375. A landing carries `data-landing` on `<body>`, and its hero (large type, an image, a product or an illustration) takes at least a fifth of the first viewport at both widths. Pictures stay whole. 44px is a tap floor, not the look of the buttons. A page of small text and empty space is a document, not a landing.
    - **An app, if the user asked for it to change:** start from a clean `git status` in the app's files. Put the tokens in one place, then shared components, then pages. Change looks only: behavior, words and structure stay. On a big app, show the user the first page before going on.
    - If the build needs a value `STYLE.md` doesn't have, stop and add the decision first. Don't invent it in the CSS.
    - A restyle that keeps structure is still a design: do not ship a clone of the source with more padding.
@@ -35,7 +35,7 @@ Use it for `/taste --brand`, when the user says to keep their brand, or when the
 
 ## Asking the user
 
-Asking is the last resort, and a legitimate one: **last resort means only what cannot be inferred from files and their words.** A thin idea cannot be inferred. `taste-brief` asks up to five questions in one batch. `taste-directions` asks at most one more (the pick). Do not invent stand-in answers. An invented why is worse than an unanswered one.
+Asking is the last resort, and a legitimate one: **last resort means only what cannot be inferred from files and their words.** A thin idea cannot be inferred. `taste-brief` asks up to five questions in one batch, including type character, color vibe, imagery and what they would hate to see when those are still open. `taste-directions` asks at most one more (the pick). Every question accepts “I don’t know, you decide”; that choice is an assumption, never an owner why. Do not invent stand-in answers. An invented why is worse than an unanswered one.
 
 ## If a run stops
 

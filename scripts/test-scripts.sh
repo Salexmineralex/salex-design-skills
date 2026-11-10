@@ -212,6 +212,52 @@ bash $s/validate.sh "$tmp/cut.html" "$tmp/v9" >"$tmp/cut.txt" 2>&1
 check "controls: a button cut off on a phone fails" "grep -qE '^FAIL control-cut-off: button is (cut off|out of view) inside div.box at 375' $tmp/cut.txt"
 check "controls: a button that fits at 1440 doesn't" "! grep -q 'control-cut-off:.*at 1440' $tmp/cut.txt"
 
+cat >"$tmp/doc.html" <<'EOF'
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lot sheet</title>
+<style>body{margin:0;padding:16px;background:#f4ead3;color:#2a2118;font:13px/1.45 "Liberation Mono",monospace}h1{font-size:22px;font-weight:400;margin:0 0 12px}td{border-bottom:1px solid #2a2118;padding:8px 12px;font-size:13px}a:focus-visible{outline:3px solid #2a2118}</style></head>
+<body><h1>Lot sheet</h1><table><tr><td>Neck</td><td>Lot</td></tr><tr><td>A</td><td>12</td></tr><tr><td>B</td><td>13</td></tr><tr><td>C</td><td>14</td></tr><tr><td>D</td><td>15</td></tr><tr><td>E</td><td>16</td></tr></table></body></html>
+EOF
+bash $s/validate.sh "$tmp/doc.html" "$tmp/v10" >"$tmp/doc.txt" 2>&1
+check "default: warm paper, mono, hairlines, small type and no imagery is flagged" "grep -q '^FAIL document-default:' $tmp/doc.txt"
+python3 - "$f/good-STYLE.md" "$tmp/owned.md" <<'PY'
+import sys
+text = open(sys.argv[1]).read()
+text = text.replace("## Tokens", """## Questions asked
+- **Q1:** What would you hate to see, and may this be a paper ledger? Answer: yes, call-sheet paper, mono lots, hairline rules, small type, no photos. Answered by the owner's assistant at the owner's request.
+
+## Tokens""")
+text = text.replace("- **Source:** brief\n- **Reviewed:** kept", "- **Source:** user answer Q1\n- **Reviewed:** kept (Q1)", 1)
+text = text.replace("Georgia on sand #f6efe3 with navy ink #12304a.", "Liberation Mono on sand #f6efe3, 13px body, 1px hairline rules, no photos.")
+text = text.replace("--font-text: Georgia, serif; /* D1 */", "--font-text: Liberation Mono, monospace; /* D1 */\n  --text-body: 13px; /* D1 */")
+open(sys.argv[2], "w").write(text)
+PY
+check "default: an owner why clears the handbook flag" "python3 $s/why-lint.py $tmp/owned.md"
+python3 - "$tmp/owned.md" "$tmp/assumed.md" <<'PY'
+import sys
+text = open(sys.argv[1]).read().replace(
+    "Answer: yes, call-sheet paper, mono lots, hairline rules, small type, no photos. Answered by the owner's assistant at the owner's request.",
+    "Answer: I don't know, you decide.",
+)
+open(sys.argv[2], "w").write(text)
+PY
+check "default: a delegated answer does not clear it" "python3 $s/why-lint.py $tmp/assumed.md | grep -q 'document-default'"
+check "why-lint: a delegated answer is not an owner why" "python3 $s/why-lint.py $tmp/assumed.md | grep -q 'delegates the choice'"
+
+cat >"$tmp/flat.html" <<'EOF'
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flat</title>
+<style>body{margin:0;padding:24px;background:#fff;color:#111;font:16px/1.5 Georgia,serif}h1{font-size:28px;font-weight:400}a{color:#111}a:focus-visible{outline:3px solid #111}</style></head>
+<body data-landing><h1>A quiet title</h1><p>This page is a document with a small heading and a paragraph.</p><p><a href="#next">Continue</a></p></body></html>
+EOF
+bash $s/validate.sh "$tmp/flat.html" "$tmp/v11" >"$tmp/flat.txt" 2>&1
+check "hero: a landing with a small heading fails" "grep -q '^FAIL hero-scale:.*at 1440' $tmp/flat.txt && grep -q '^FAIL hero-scale:.*at 375' $tmp/flat.txt"
+cat >"$tmp/hero.html" <<'EOF'
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hero</title>
+<style>body{margin:0;background:#102018;color:#f4f1ea;font:18px/1.4 Helvetica,sans-serif}.hero{min-height:70vh;display:flex;align-items:flex-end;padding:32px}h1{font-size:64px;line-height:0.95;margin:0}a{color:#f4f1ea;display:inline-block;min-height:44px;padding:12px 0}a:focus-visible{outline:3px solid #f4f1ea}</style></head>
+<body data-landing><section class="hero" data-hero><h1>Night market opens</h1></section><p><a href="#in">Enter</a></p></body></html>
+EOF
+bash $s/validate.sh "$tmp/hero.html" "$tmp/v12" >"$tmp/hero.txt" 2>&1
+check "hero: a landing with a dominant first screen passes" "! grep -q '^FAIL hero-scale:' $tmp/hero.txt"
+
 check "sync: skill copies match shared/" "scripts/sync-shared.sh --check"
 
 [ "$fails" = 0 ] && echo "all passed" || { echo "$fails failed"; exit 1; }

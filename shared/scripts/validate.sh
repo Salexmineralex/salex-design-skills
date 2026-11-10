@@ -15,7 +15,10 @@
 #   sideways), empty-box, broken-image, focus (no visible ring), text-removed, text-added,
 #   text-hidden, off-token (colors, drawings, fonts and sizes), token-drift (the page
 #   gives a token another value), unreasoned (a pattern with no decision that uses it),
-#   style-lint, style-after-build
+#   style-lint, style-after-build, document-default (warm off-white paper +
+#   monospace-led type + hairline rules + small text + no imagery, unless an
+#   owner answer asks for that cluster), hero-scale (a landing's first viewport
+#   has no dominant element covering at least a fifth of it)
 # WARN (look at it): touch targets under 44px, weak spacing consistency, spacing off the
 #   handbook's scale, overlaps and cut-off content from screenshot.sh
 # INFO: image and text ratio, placeholders, emoji replaced by drawn icons
@@ -302,6 +305,62 @@ const measure = () => {
     words: document.body.innerText.trim().split(/\s+/).length, blocks,
     drawn: document.querySelectorAll("svg, img").length,
     emoji: (document.body.textContent.match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}️/gu) || []).length,
+    ...(() => {
+  const monoRe = /mono|courier|consolas|inconsolata|cousine|menlo|andale|jetbrains|space mono|plex mono|source code|roboto mono|ui-monospace/i;
+  let monoNodes = 0;
+  const pxList = [];
+  for (const el of texted) {
+    const s = cs(el);
+    if (monoRe.test(s.fontFamily)) monoNodes++;
+    pxList.push(parseFloat(s.fontSize) || 16);
+  }
+  pxList.sort((a, b) => a - b);
+  const medianPx = pxList.length ? pxList[Math.floor(pxList.length / 2)] : 16;
+  const paper = color(cs(document.body).backgroundColor);
+  const warm = paper.a === 1 && paper.r >= 220 && paper.g >= 200 && paper.b >= 170 && paper.r >= paper.g && paper.g + 4 >= paper.b && paper.r - paper.b >= 14 && paper.r - paper.b < 90;
+  let hair = 0;
+  for (const el of all) {
+    const s = cs(el);
+    const sides = ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(s["border" + side + "Width"]) || 0);
+    if (sides.some((w) => w > 0 && w <= 1.05)) hair++;
+  }
+  let imagery = 0;
+  for (const el of document.querySelectorAll("img, svg, video, canvas, picture")) {
+    if (!seen(el) || (el.parentElement && el.parentElement.closest("svg"))) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width >= 80 && r.height >= 80) imagery++;
+  }
+  for (const el of all) {
+    const img = cs(el).backgroundImage;
+    if (/url\(/.test(img)) imagery++;
+  }
+  const vh = innerHeight, vw = innerWidth, area = Math.max(1, vw * vh);
+  let hero = 0;
+  const boxShare = (r) => {
+    const visH = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    const visW = Math.min(r.right, vw) - Math.max(r.left, 0);
+    if (visW < 8 || visH < 8) return 0;
+    return (visW * visH) / area;
+  };
+  for (const el of document.querySelectorAll("h1, img, svg, video, canvas, picture, [data-hero]")) {
+    if (el.matches("svg *") || !seen(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.top >= vh * 0.9) continue;
+    if (el.matches("[data-hero]")) {
+      const heading = el.querySelector("h1, h2");
+      const media = [...el.querySelectorAll("img, svg, video, canvas")].some((m) => { const b = m.getBoundingClientRect(); return b.width >= 100 || b.height >= 100; });
+      const bigType = heading && parseFloat(cs(heading).fontSize) >= 48;
+      if (!bigType && !media) continue;
+    } else if (el.matches("svg, img") && r.width < 80 && r.height < 80) continue;
+    hero = Math.max(hero, boxShare(r));
+  }
+  return {
+    landing: document.body.hasAttribute("data-landing") || document.documentElement.hasAttribute("data-landing"),
+    hero,
+    warm, hair, imagery, medianPx,
+    monoShare: monoNodes / Math.max(1, texted.length),
+  };
+  })(),
   };
 };
 
@@ -478,6 +537,36 @@ const buildOf = async (page, target) => {
     } else lines.push("INFO tokens: spacing not compared, ## Tokens has no fixed spacing scale");
     const words = { gradient: /gradient|ombr[eé]/, emoji: /emoji/, step: /numbered|sequence|\bstep (number|label)/, card: /\bcards?\b|\bpanels?\b|\btiles?\b/ };
     for (const p of wide.patterns) if (!t.said.some((s) => words[p].test(s))) fail("unreasoned", "the page uses a " + p + " pattern, and no decision says it does and why");
+  }
+
+  // Warm paper, mono-led type, hairline rules, small text, no imagery. Not banned:
+  // an owner answer that asks for it clears the flag. "You decide" does not.
+  const cluster = (m) => m.warm && m.monoShare >= 0.2 && m.hair >= 5 && m.medianPx <= 15 && m.imagery === 0;
+  const ownerClearsDefault = (raw) => {
+    const qBody = (raw.split(/^## /m).find((s) => s.startsWith("Questions asked")) || "");
+    const real = new Set();
+    for (const m of qBody.matchAll(/^- \*\*Q(\d+):\*\*.*$/gm)) {
+      const ans = (m[0].split(/Answer:/i)[1] || "");
+      if (/Answer:/i.test(m[0]) && !/\b(i don'?t know|you decide|delegat)/i.test(ans)) real.add(m[1]);
+    }
+    if (!real.size) return false;
+    const look = /\b(paper|beige|cream|vellum|mono(?:space)?|typewriter|hairline|1px|rules?|no (?:photos?|images?|illustrations?|imagery)|type only|small (?:type|text|body))\b/i;
+    for (const entry of raw.split(/^### /m).slice(1)) {
+      const source = ((entry.match(/^- \*\*Source:\*\*\s*(.*)$/m) || [])[1] || "");
+      const cited = [...source.matchAll(/Q(\d+)/g)].map((x) => x[1]);
+      if (cited.some((n) => real.has(n)) && look.test(entry)) return true;
+    }
+    return false;
+  };
+  if ((cluster(wide) || cluster(phone)) && !(stylePath && ownerClearsDefault(fs.readFileSync(stylePath, "utf8")))) {
+    fail("document-default", "warm off-white paper, monospace-led type, hairline rules, small text and no imagery: this shared default needs an owner why, not an assumption");
+  }
+  const prelude = stylePath ? (fs.readFileSync(stylePath, "utf8").split(/^## Decisions/m)[0] || "") : "";
+  const landing = wide.landing || phone.landing || /\blanding\b/i.test(prelude);
+  if (landing) {
+    for (const [w, m] of [[1440, wide], [375, phone]]) {
+      if (m.hero < 0.2) fail("hero-scale", "at " + w + " the largest type, image, product or illustration in the first viewport covers " + Math.round(m.hero * 100) + "% of it; a landing needs one dominant element, at least a fifth of that viewport");
+    }
   }
 
   for (const w of process.env.WARNINGS.split("\n").filter((l) => l.trim())) lines.push(w);

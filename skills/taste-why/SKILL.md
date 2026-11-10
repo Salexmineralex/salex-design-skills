@@ -42,10 +42,10 @@ The one named move the page must show. Hierarchy: what is loud, what is quiet, a
 - **Reviewed:** kept, or kept (Q1) when it rests on an answer
 
 ## Assumptions
-- **A1:** a fact from a file or a measurement, not a taste guess. Never used as a Why.
+- **A1:** a fact from a file, a measurement, or a choice the owner delegated (“I don’t know, you decide”). A delegated choice names what was chosen. Never used as a Why, and never cited as a user answer.
 
 ## Questions asked
-- **Q1:** the question, the options, the answer. Authoritative; cited as Source.
+- **Q1:** the question, the options, the answer. An owner’s own words are authoritative; cited as Source. A delegated reply is not an answer: it lives under Assumptions.
 
 ## Tokens
 ```css
@@ -94,8 +94,11 @@ in the world. It has to make this option better than the one in "Instead of".
 5. OPEN: does the Why admit that something is undecided, or need a fact the idea, brief
    and mood board don't give, where a different answer would change the decision? Fail.
    A reasonable reading of the brief isn't open, and neither is a settled fact.
-   An assumption in ## Assumptions is not a Why: if the decision needs a taste fact
-   that was never asked, OPEN fails.
+   An assumption in ## Assumptions is not a Why. A file or a measurement is settled.
+   A choice the owner delegated (“I don’t know, you decide”) is settled only as an
+   assumption: the Why may say what that choice does for the idea, and Source is
+   assumption, never user answer. Citing the delegation as their why fails.
+   If the decision needs a taste fact that was never asked, OPEN fails.
 
 Reply in exactly this form:
 SWAP: pass or fail, in a few words
@@ -126,6 +129,8 @@ Re-read the decisions as a stranger looking at a page that does not exist yet. *
 - Imagery is “crop until overflow stops.”
 - Actions read as isolated 44px chrome, not a system.
 - The layout is the default for this product type, and the brief did not ask for that default.
+- The page would be the shared document default — warm off-white or beige paper, monospace-led type, hairline rules, small body text, no imagery — and no owner answer asks for that cluster. An assumption does not clear it.
+- It is a landing whose signature has no dominant element (large type, image, product or illustration) taking at least a fifth of the first viewport. Small text and empty space read as a document.
 
 ## Asking the user
 
@@ -135,6 +140,6 @@ If you somehow still need a fact, mark the decision `Reviewed: unresolved` and s
 
 ## Finished means
 
-`python3 <skill folder>/scripts/why-lint.py STYLE.md` passes. It checks the form: sections in order (Idea, Principles, Signature, Decisions, Tokens), every field present, no fashion words in a Why, no inherit-only Why unless Source is brand, nothing unresolved, `Reviewed` exactly `kept` or `kept (Qn)` with Qn recorded, no more than six questions, every token tracing to a decision. Passing doesn’t make the reasons good. The reviewer tests the argument before anything exists; the Look pass tests whether a page from this file would be designed; only someone looking at the result can tell whether it shows.
+`python3 <skill folder>/scripts/why-lint.py STYLE.md` passes. It checks the form: sections in order (Idea, Principles, Signature, Decisions, Tokens), every field present, no fashion words in a Why, no inherit-only Why unless Source is brand, nothing unresolved, `Reviewed` exactly `kept` or `kept (Qn)` with Qn recorded, no more than six questions, every token tracing to a decision. Passing doesn’t make the reasons good. The lint also rejects the shared document default unless an owner answer asks for it, and a decision kept on “I don’t know, you decide”. The reviewer tests the argument before anything exists; the Look pass tests whether a page from this file would be designed, including a landing hero; only someone looking at the result can tell whether it shows.
 
 Read it once as a stranger. Could you build from this without asking anything? Fix what you’d have to ask.
