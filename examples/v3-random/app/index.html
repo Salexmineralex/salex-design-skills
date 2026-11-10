@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home rota — swans and grumphies, shared with the friend who stayed</title>
+  <style>
+    :root {
+      --color-primer: #d7e6d4;
+      --color-ink: #14241a;
+      --color-enamel: #1f6b45;
+      --color-ochre: #c45c12;
+      --color-sign: #f6f1e6;
+      --font-body: Palatino, "Palatino Linotype", Georgia, serif;
+      --text-body: 19px;
+      --text-label: 28px;
+      --text-display: 72px;
+      --text-section: 48px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 40px;
+      --space-5: 64px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-primer); color: var(--color-ink); }
+    body { font-family: var(--font-body); font-size: var(--text-body); line-height: 1.45; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--color-ochre); outline-offset: 3px; }
+    .bar, .hero, main { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .bar { display: flex; justify-content: space-between; align-items: center; min-height: 64px; }
+    .mark { font-size: var(--text-label); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+    .bar a.quiet { min-height: 44px; display: inline-flex; align-items: center; }
+    .hero { min-height: 72vh; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: end; padding-bottom: var(--space-5); }
+    .cut { width: 100%; height: auto; display: block; }
+    h1 { font-size: var(--text-display); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; margin: 0 0 var(--space-2); color: var(--color-enamel); }
+    .lede { max-width: 26em; margin: 0 0 var(--space-3); }
+    .action { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-3); background: var(--color-enamel); color: var(--color-sign); text-decoration: none; font-size: var(--text-label); }
+    main { padding-bottom: var(--space-5); max-width: 760px; }
+    h2 { font-size: var(--text-section); line-height: 1; margin: var(--space-5) 0 var(--space-2); color: var(--color-ochre); }
+    p { max-width: 32em; }
+    @media (max-width: 800px) {
+      .bar, .hero, main { padding-left: var(--space-3); padding-right: var(--space-3); }
+      .hero { grid-template-columns: 1fr; min-height: 70vh; }
+      h1 { font-size: var(--text-section); }
+    }
+  </style>
+</head>
+<body data-landing>
+  <header class="bar">
+    <a class="mark" href="#flock">Home rota</a>
+    <a class="quiet" href="#today">Today’s pen</a>
+  </header>
+  <section class="hero" data-hero id="flock">
+    <svg class="cut" viewBox="0 0 640 560" role="img" aria-label="Cut-paper swan and a pig on a workshop bench">
+      <rect width="640" height="560" fill="#d7e6d4"/>
+      <ellipse cx="430" cy="250" rx="150" ry="90" fill="#f6f1e6"/>
+      <path fill="#1f6b45" d="M250 250 C310 120 470 130 520 230 C490 200 450 210 430 240 C470 250 490 290 450 320 C400 360 300 340 250 250 Z"/>
+      <circle cx="500" cy="220" r="10" fill="#14241a"/>
+      <path fill="#c45c12" d="M120 360 C160 300 230 310 250 360 C220 390 160 400 120 360 Z"/>
+      <circle cx="210" cy="345" r="8" fill="#14241a"/>
+      <rect x="80" y="420" width="480" height="16" fill="#1f6b45"/>
+      <text x="80" y="500" fill="#14241a" font-family="Palatino, Georgia, serif" font-size="36">Swannery pen · sow still in</text>
+    </svg>
+    <div>
+      <h1>Home rota</h1>
+      <p class="lede">You left. Your homeboy stayed with the swannery and the grumphies. The app is the feeding rota you still share, not a postcard of the birds.</p>
+      <a class="action" id="today" href="#today">Open today’s pen</a>
+    </div>
+  </section>
+  <main>
+    <h2>What you actually do</h2>
+    <p>Mark the swan pen and the pig pen for the day. If the sow is out, or a swan is off the water, the friend who is there already knows. You are confirming the rota, not watching a stream.</p>
+    <h2>What it will not do</h2>
+    <p>It will not diagnose an animal, sell a feed, or show you a phone with two shop buttons. Grumphie here is the Scots word for the pig, used because that is what you called her.</p>
+  </main>
+</body>
+</html>

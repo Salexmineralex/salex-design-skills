@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cusp — one hypocycloid plate from a demolishment</title>
+  <style>
+    :root {
+      --color-yard: #14110e;
+      --color-ink: #f3eee6;
+      --color-spark: #ff5a1f;
+      --color-steel: #b7c0c8;
+      --color-mute: #8a8178;
+      --font-display: "Avenir Next Condensed", "Avenir Next", Avenir, sans-serif;
+      --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --text-body: 18px;
+      --text-kicker: 28px;
+      --text-display: 72px;
+      --text-plate: 48px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 40px;
+      --space-5: 64px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-yard); color: var(--color-ink); }
+    body { font-family: var(--font-body); font-size: var(--text-body); line-height: 1.45; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--color-spark); outline-offset: 3px; }
+    .bar, .hero, main { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .bar {
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 64px; padding-top: var(--space-2); padding-bottom: var(--space-2);
+    }
+    .mark { font-family: var(--font-display); font-size: var(--text-kicker); letter-spacing: 0.04em; text-decoration: none; text-transform: uppercase; min-height: 44px; display: inline-flex; align-items: center; }
+    .bar a.stock { min-height: 44px; display: inline-flex; align-items: center; text-decoration: none; border-bottom: 3px solid var(--color-spark); }
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--space-4);
+      align-items: end;
+      padding-bottom: var(--space-5);
+    }
+    .plate { width: 100%; height: auto; display: block; }
+    h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-display);
+      font-weight: 700;
+      line-height: 0.86;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      margin: 0 0 var(--space-2);
+    }
+    .lede { max-width: 28em; margin: 0 0 var(--space-3); }
+    .action {
+      display: inline-flex; align-items: center; min-height: 48px;
+      padding: 0 var(--space-3);
+      background: var(--color-spark); color: var(--color-yard);
+      font-family: var(--font-display); font-size: var(--text-kicker);
+      text-decoration: none; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    main { padding-bottom: var(--space-5); max-width: 880px; }
+    h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-plate);
+      font-weight: 700;
+      line-height: 0.95;
+      text-transform: uppercase;
+      margin: var(--space-5) 0 var(--space-2);
+    }
+    p { max-width: 34em; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    li { padding: var(--space-2) 0; border-top: 3px solid var(--color-steel); max-width: 34em; }
+    .mute { color: var(--color-mute); }
+    @media (max-width: 800px) {
+      .bar, .hero, main { padding-left: var(--space-3); padding-right: var(--space-3); }
+      .hero { grid-template-columns: 1fr; min-height: 70vh; align-items: stretch; }
+      h1 { font-size: var(--text-plate); }
+    }
+  </style>
+</head>
+<body data-landing>
+  <header class="bar">
+    <a class="mark" href="#plate">Cusp</a>
+    <a class="stock" href="#take">One plate left</a>
+  </header>
+  <section class="hero" data-hero id="plate">
+    <svg class="plate" viewBox="0 0 640 640" role="img" aria-label="A cut steel plate with a four-cusp hypocycloid still chalky with plaster dust">
+      <rect width="640" height="640" fill="#14110e"/>
+      <circle cx="320" cy="330" r="250" fill="#b7c0c8"/>
+      <circle cx="320" cy="330" r="198" fill="#14110e"/>
+      <path fill="#ff5a1f" d="M320 150 C390 150 430 230 430 330 C430 430 390 510 320 510 C250 510 210 430 210 330 C210 230 250 150 320 150 Z"/>
+      <path fill="#14110e" d="M320 210 L392 330 L320 450 L248 330 Z"/>
+      <circle cx="320" cy="330" r="28" fill="#ff5a1f"/>
+      <rect x="48" y="48" width="120" height="18" fill="#f3eee6"/>
+      <rect x="48" y="74" width="78" height="8" fill="#8a8178"/>
+    </svg>
+    <div>
+      <h1>Cusp</h1>
+      <p class="lede">One hypocycloid plate, cut from a gear housing, pulled the day the wall came down. The pale bloom on the steel is the poof of plaster, not a finish.</p>
+      <a class="action" id="take" href="#take">Take this plate</a>
+    </div>
+  </section>
+  <main>
+    <h2>From the demolishment</h2>
+    <p>The housing came out of a machine room on Rope Walk. We sell the plate, the curve, and the address. We do not sell a set, a rust wash, or a story about industry in general.</p>
+    <h2>On the steel</h2>
+    <ul>
+      <li>Four-cusp hypocycloid, the path of a circle rolled inside a circle four times as wide.</li>
+      <li>Plaster dust left in the cusps. Wiping it off is how a new part pretends to be old.</li>
+      <li>One bolt hole, still round. If it is oval, this is not the plate from Rope Walk.</li>
+    </ul>
+    <p class="mute">Ship from the yard. No catalogue number.</p>
+  </main>
+</body>
+</html>

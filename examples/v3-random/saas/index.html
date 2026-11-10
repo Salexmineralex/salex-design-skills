@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overpedal — the town digester, before a tourist weekend sours it</title>
+  <style>
+    :root {
+      --color-tile: #e7eef2;
+      --color-ink: #102028;
+      --color-pool: #0c3f4c;
+      --color-grout: #c5d2d8;
+      --color-foam: #f4f7f8;
+      --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --text-body: 18px;
+      --text-label: 28px;
+      --text-read: 48px;
+      --text-display: 72px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 40px;
+      --space-5: 64px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-tile); color: var(--color-ink); }
+    body { font-family: var(--font-body); font-size: var(--text-body); line-height: 1.45; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--color-pool); outline-offset: 3px; }
+    .bar, .hero, main { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .bar { display: flex; justify-content: space-between; align-items: center; min-height: 64px; }
+    .mark { font-size: var(--text-label); font-weight: 700; text-decoration: none; letter-spacing: -0.03em; min-height: 44px; display: inline-flex; align-items: center; }
+    .bar a.quiet { min-height: 44px; display: inline-flex; align-items: center; text-decoration: none; }
+    .hero { min-height: 72vh; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--space-4); align-items: end; padding-bottom: var(--space-5); }
+    h1 { font-size: var(--text-display); font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; margin: 0 0 var(--space-2); }
+    .lede { max-width: 26em; margin: 0 0 var(--space-3); }
+    .action { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-3); background: var(--color-pool); color: var(--color-foam); text-decoration: none; font-size: var(--text-label); font-weight: 700; }
+    .tank { width: 100%; height: auto; display: block; background: var(--color-foam); }
+    main { padding-bottom: var(--space-5); max-width: 760px; }
+    h2 { font-size: var(--text-read); font-weight: 700; letter-spacing: -0.03em; margin: var(--space-5) 0 var(--space-2); }
+    p { max-width: 34em; }
+    @media (max-width: 800px) {
+      .bar, .hero, main { padding-left: var(--space-3); padding-right: var(--space-3); }
+      .hero { grid-template-columns: 1fr; min-height: 70vh; }
+      h1 { font-size: var(--text-read); }
+    }
+  </style>
+</head>
+<body data-landing>
+  <header class="bar">
+    <a class="mark" href="#tank">Overpedal</a>
+    <a class="quiet" href="#divert">Open the tank</a>
+  </header>
+  <section class="hero" data-hero id="tank">
+    <div>
+      <h1>Overpedal</h1>
+      <p class="lede">Friday’s festival will overfeed the town digester. The panel shows the load before the tank sours, so the operator can divert waste instead of guessing from yesterday.</p>
+      <a class="action" id="divert" href="#divert">Divert the weekend</a>
+    </div>
+    <svg class="tank" viewBox="0 0 720 560" role="img" aria-label="Digester panel: three level marks, the weekend bar already past the sour line">
+      <rect width="720" height="560" fill="#f4f7f8"/>
+      <rect x="36" y="36" width="648" height="488" fill="none" stroke="#0c3f4c" stroke-width="8"/>
+      <text x="56" y="92" fill="#0c3f4c" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="42" font-weight="700">Tank 2 · Friday</text>
+      <rect x="56" y="140" width="420" height="64" fill="#c5d2d8"/>
+      <rect x="56" y="140" width="360" height="64" fill="#0c3f4c"/>
+      <rect x="56" y="230" width="420" height="64" fill="#c5d2d8"/>
+      <rect x="56" y="230" width="250" height="64" fill="#102028"/>
+      <rect x="56" y="320" width="420" height="64" fill="#c5d2d8"/>
+      <rect x="56" y="320" width="140" height="64" fill="#0c3f4c"/>
+      <text x="500" y="184" fill="#102028" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28">load</text>
+      <text x="500" y="274" fill="#102028" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28">gas</text>
+      <text x="500" y="364" fill="#102028" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28">sour</text>
+      <text x="56" y="470" fill="#102028" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28">Tourist coaches due 16:00. Divert before 14:00.</text>
+    </svg>
+  </section>
+  <main>
+    <h2>What the operator sees</h2>
+    <p>One tank, three marks, one time to divert. The page is that panel. It does not explain biogas to a visitor who is not on shift.</p>
+    <h2>Who it is for</h2>
+    <p>The person on duty the Friday a festival starts, deciding whether the digester can take the coaches or the waste has to go elsewhere before the biology tips.</p>
+  </main>
+</body>
+</html>

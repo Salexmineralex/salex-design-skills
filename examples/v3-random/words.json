@@ -1,0 +1,15 @@
+{
+  "source": "https://random-word-api.herokuapp.com/word?number=9",
+  "fetched": "2026-11-10",
+  "raw": ["hypocycloids", "poofs", "demolishments", "overpedalled", "digestor", "touristed", "swanneries", "grumphies", "homeboy"],
+  "split": "first three ecommerce, next three saas, last three app, in the order the API returned them",
+  "ecommerce": ["hypocycloids", "poofs", "demolishments"],
+  "saas": ["overpedalled", "digestor", "touristed"],
+  "app": ["swanneries", "grumphies", "homeboy"],
+  "notes": {
+    "hypocycloid": "curve traced by a point on a circle rolling inside a fixed circle",
+    "poofs": "used here as the puff of plaster dust when a wall comes down, not as a name for a person",
+    "grumphie": "Scots familiar name for a pig (Dictionaries of the Scots Language)",
+    "swannery": "a place where swans are kept"
+  }
+}
