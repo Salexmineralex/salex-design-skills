@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Isthmus Lot — directions</title>
+  <style>
+    body { margin: 0; background: #ece6d6; color: #1a2744; font: 14px/1.4 "Liberation Serif", Georgia, serif; }
+    header { padding: 24px 32px 8px; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 400; margin: 0 0 8px; }
+    .note { font: 13px/1.45 "Liberation Sans", sans-serif; max-width: 70ch; }
+    .grid { display: grid; gap: 28px; padding: 16px 32px 48px; max-width: 1100px; margin: 0 auto; }
+    article { background: #f7f1de; border: 1px solid #1a2744; }
+    article h2 { margin: 0; padding: 10px 14px; font: 13px/1.3 "Liberation Mono", monospace; border-bottom: 1px solid #1a2744; text-transform: uppercase; letter-spacing: 0.06em; }
+    .pick { outline: 3px solid #9b1c1c; }
+    .screen { min-height: 280px; padding: 16px; position: relative; overflow: visible; }
+    .cost { padding: 10px 14px; font: 13px/1.4 "Liberation Sans", sans-serif; border-top: 1px solid #1a2744; }
+    .chart { background:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, #c5cbb8 19px, #c5cbb8 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, #c5cbb8 19px, #c5cbb8 20px);
+      color: #1a2744; }
+    .chart .coords { font: 11px/1 "Liberation Mono", monospace; display: flex; justify-content: space-between; }
+    .chart h3 { font-size: 28px; font-weight: 400; margin: 8px 0 4px; }
+    .lot { font: 12px/1.2 "Liberation Mono", monospace; border: 1px solid #1a2744; padding: 6px 8px; background: #f7f1de; margin: 6px 0; max-width: 280px; }
+    .ledger { background: #f4efe4; }
+    .ledger table { width: 100%; border-collapse: collapse; font: 12px/1.3 "Liberation Mono", monospace; }
+    .ledger td { border-bottom: 1px solid #1a2744; padding: 6px 4px; }
+    .jetty { background: #1a1f24; color: #e8e0c8; }
+    .jetty h3 { font: 400 32px/1 "Liberation Serif", Georgia, serif; margin: 40px 0 8px; }
+    .reject { font: 13px/1.45 "Liberation Sans", sans-serif; max-width: 70ch; padding: 0 32px 40px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Isthmus Lot — three directions</h1>
+    <p class="note">Rejected default: white equal-width product cards on a cream shop. Brief forbids it (Q4). Recommendation: Chartfold — its signature is the chart and the lot label, which is the world named in Q3.</p>
+  </header>
+  <div class="grid">
+    <article class="pick">
+      <h2>A. Chartfold — recommended</h2>
+      <div class="screen chart">
+        <div class="coords"><span>56°12.4′ N</span><span>LOT · ISTHMUS</span><span>05°41.1′ W</span></div>
+        <h3>Isthmus Lot</h3>
+        <p style="margin:0 0 10px; max-width:36ch;">Washed-rind and barrel fish, named to the neck of land they came from.</p>
+        <svg viewBox="0 0 320 70" width="100%" height="70" aria-hidden="true">
+          <path d="M8 40 C40 38 50 18 90 22 C130 26 150 50 200 44 C250 38 280 20 312 28" fill="none" stroke="#1a2744" stroke-width="1.2"/>
+          <path d="M8 48 C50 46 70 32 110 34 C160 36 170 58 220 52 C270 46 290 32 312 36" fill="none" stroke="#1a2744" stroke-width="1"/>
+          <circle cx="200" cy="44" r="3" fill="#9b1c1c"/>
+        </svg>
+        <div class="lot">LOT 14-E · Époisses · Pointe de Grouin · 280g · £18</div>
+        <div class="lot">LOT 09-N · gravlax · Tarbert neck · 200g · £14</div>
+      </div>
+      <p class="cost">Signature: page as a coastal chart, goods as lot tickets. Cost: denser than a shop grid; first-time buyers scan slower.</p>
+    </article>
+    <article>
+      <h2>B. Ledger</h2>
+      <div class="screen ledger">
+        <p style="font:12px/1 Liberation Mono,monospace;margin:0 0 8px;">ISTHMUS LOT · PROVENANCE BOOK · PAGE 1</p>
+        <h3 style="font:400 24px/1 Liberation Serif,Georgia,serif;margin:0 0 12px;">Lots open tonight</h3>
+        <table>
+          <tr><td>14-E</td><td>Époisses, washed</td><td>Pointe de Grouin</td><td>£18</td></tr>
+          <tr><td>09-N</td><td>Gravlax</td><td>Tarbert neck</td><td>£14</td></tr>
+          <tr><td>03-S</td><td>Taleggio</td><td>Lido isthmus</td><td>£16</td></tr>
+        </table>
+      </div>
+      <p class="cost">Signature: accounting book of lots. Cost: honest about money, weak on geography — “isthmi” becomes a column, not a place.</p>
+    </article>
+    <article>
+      <h2>C. Jetty</h2>
+      <div class="screen jetty">
+        <p style="font:11px/1 Liberation Mono,monospace;letter-spacing:.12em;">NIGHT TIDE · 03:14</p>
+        <h3>One rind. Named.</h3>
+        <p style="max-width:28ch;opacity:.85;">Époisses, lot 14-E, from the neck at Grouin. Not a supermarket copy.</p>
+      </div>
+      <p class="cost">Signature: one wet-stone specimen. Cost: mood over map; easy to slip into rustic-dark food photography the brief forbids.</p>
+    </article>
+  </div>
+  <p class="reject">Q6 pick (owner’s assistant at the owner’s request): Chartfold, because its signature most strongly uses the chart/lot-label world.</p>
+</body>
+</html>

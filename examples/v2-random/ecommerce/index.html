@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Isthmus Lot — washed-rind and barrel fish, named to the neck</title>
+  <style>
+    :root {
+      --color-ink: #1a2744;
+      --color-paper: #f3ead2;
+      --color-chart: #c5cbb8;
+      --color-sea: #dce4d0;
+      --color-action: #9b1c1c;
+      --color-white: #ffffff;
+      --color-muted: #3d4a3a;
+      --font-display: Liberation Serif, Georgia, serif;
+      --font-lot: Liberation Mono, Cousine, monospace;
+      --font-size-lot: 12px;
+      --font-size-body: 16px;
+      --font-size-kicker: 22px;
+      --font-size-sub: 32px;
+      --font-size-display: 48px;
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 48px;
+      --space-6: 64px;
+      --radius: 0px;
+      --row-height: 48px;
+      --focus-width: 2px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
+    body {
+      font-family: var(--font-display);
+      font-size: var(--font-size-body);
+      line-height: 1.45;
+    }
+    a { color: var(--color-ink); }
+    a:focus-visible, button:focus-visible {
+      outline: var(--focus-width) solid var(--color-ink);
+      outline-offset: var(--focus-width);
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-ink);
+      min-height: var(--row-height);
+    }
+    .coords {
+      margin: 0;
+      padding: 0 var(--space-2);
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      display: flex;
+      align-items: center;
+      min-height: var(--row-height);
+      letter-spacing: 0.04em;
+    }
+    nav { display: flex; flex-wrap: wrap; }
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: var(--row-height);
+      padding: 0 var(--space-2);
+      text-decoration: none;
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      border-left: 1px solid var(--color-ink);
+    }
+    nav a:hover { background: var(--color-sea); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: var(--space-4) var(--space-2) var(--space-6); }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      align-items: center;
+      margin-bottom: var(--space-5);
+    }
+    .kicker {
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      letter-spacing: 0.08em;
+      margin: 0 0 var(--space-2);
+      color: var(--color-muted);
+    }
+    h1 {
+      font-size: var(--font-size-display);
+      font-weight: 400;
+      line-height: 1.15;
+      margin: 0 0 var(--space-2);
+      max-width: 16ch;
+    }
+    .lede { max-width: 36ch; margin: 0 0 var(--space-3); }
+    .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: var(--row-height);
+      padding: 0 var(--space-3);
+      background: var(--color-action);
+      color: var(--color-white);
+      text-decoration: none;
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      border: 1px solid var(--color-action);
+      border-radius: var(--radius);
+    }
+    .action:hover { background: var(--color-ink); border-color: var(--color-ink); }
+    .action:active { background: var(--color-ink); color: var(--color-paper); }
+    figure { margin: 0; overflow: visible; }
+    figure svg { width: 100%; height: auto; display: block; background: var(--color-sea); border: 1px solid var(--color-ink); }
+    figcaption {
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      margin-top: var(--space-1);
+      color: var(--color-muted);
+    }
+    h2 {
+      font-size: var(--font-size-sub);
+      font-weight: 400;
+      margin: 0 0 var(--space-2);
+    }
+    .section-kicker {
+      font-family: var(--font-lot);
+      font-size: var(--font-size-kicker);
+      margin: 0 0 var(--space-1);
+    }
+    .lot {
+      display: grid;
+      grid-template-columns: 7rem 1fr auto;
+      gap: var(--space-2);
+      align-items: stretch;
+      padding: 0;
+      border: 1px solid var(--color-ink);
+      border-top: 0;
+      border-radius: var(--radius);
+    }
+    .lot-code {
+      padding: var(--space-2);
+      background: var(--color-sea);
+      display: flex;
+      align-items: center;
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+    }
+    .lot > div:nth-child(2) { padding: var(--space-2) 0; }
+    .lot:first-of-type { border-top: 1px solid var(--color-ink); }
+    .lot:hover { border-left-width: 4px; }
+    .lot p { margin: 0; max-width: 48ch; }
+    .lot .meta { color: var(--color-muted); font-size: var(--font-size-body); }
+    .take {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: auto;
+      align-self: stretch;
+      padding: 0 var(--space-2);
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      background: var(--color-paper);
+      color: var(--color-action);
+      border: 0;
+      border-left: 1px solid var(--color-action);
+      text-decoration: none;
+      border-radius: var(--radius);
+    }
+    .take:hover { background: var(--color-action); color: var(--color-white); }
+    .prose { max-width: 42ch; }
+    .producers { margin: var(--space-5) 0; }
+    .producer-line {
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+      border-bottom: 1px solid var(--color-chart);
+      padding: var(--space-2) 0;
+      margin: 0;
+    }
+    footer {
+      border-top: 1px solid var(--color-ink);
+      padding: var(--space-3) var(--space-2);
+      font-family: var(--font-lot);
+      font-size: var(--font-size-lot);
+    }
+    @media (max-width: 700px) {
+      h1 { font-size: var(--font-size-sub); max-width: none; }
+      .hero { grid-template-columns: 1fr; }
+      .lot { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="coords">48°40.1′ N  01°50.4′ W  ·  ISTHMUS LOT  ·  CHART 7</p>
+    <nav aria-label="Chart index">
+      <a href="#lots">Lots</a>
+      <a href="#method">Method</a>
+      <a href="#producers">Producers</a>
+      <a href="#order">Order</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <p class="kicker">WASHED-RIND · BARREL FISH · NAMED TO THE NECK</p>
+        <h1>Lots from the isthmi. Never a supermarket copy.</h1>
+        <p class="lede">For cooks who already buy the strong stuff, and who have been sold a fake “artisan” rind once. Each lot is a coordinate and a name.</p>
+        <a class="action" href="#lots">Open tonight’s lots</a>
+      </div>
+      <figure>
+        <svg viewBox="0 0 520 340" role="img" aria-labelledby="chartTitle chartDesc">
+          <title id="chartTitle">Chart 7 — necks we buy from</title>
+          <desc id="chartDesc">A coastal chart: two seas and a thin strip of land, with red pins at Grouin, Tarbert, the Lido, and the Limfjord neck.</desc>
+          <rect width="520" height="340" fill="#dce4d0"/>
+          <g stroke="#c5cbb8" stroke-width="1" fill="none">
+            <path d="M0 40 H520 M0 80 H520 M0 120 H520 M0 160 H520 M0 200 H520 M0 240 H520 M0 280 H520 M0 320 H520"/>
+            <path d="M40 0 V340 M80 0 V340 M120 0 V340 M160 0 V340 M200 0 V340 M240 0 V340 M280 0 V340 M320 0 V340 M360 0 V340 M400 0 V340 M440 0 V340 M480 0 V340"/>
+          </g>
+          <path fill="#f3ead2" stroke="#1a2744" stroke-width="1.5"
+            d="M36 210 C80 200 110 120 170 110 C210 104 230 150 280 146 C340 140 360 70 430 78 C470 82 500 120 520 118 L520 230 C480 240 450 200 400 210 C340 224 320 300 250 292 C190 284 160 230 110 236 C70 240 40 260 0 250 L0 220 C12 216 24 212 36 210 Z"/>
+          <circle cx="170" cy="110" r="6" fill="#9b1c1c"/>
+          <circle cx="280" cy="146" r="6" fill="#9b1c1c"/>
+          <circle cx="430" cy="78" r="6" fill="#9b1c1c"/>
+          <circle cx="250" cy="292" r="6" fill="#9b1c1c"/>
+          <g fill="#1a2744" font-family="Liberation Mono, Cousine, monospace" font-size="11">
+            <text x="178" y="104">14-E GROUIN</text>
+            <text x="288" y="140">09-N TARBERT</text>
+            <text x="400" y="68">03-S LIDO</text>
+            <text x="258" y="286">21-W LIMFJORD</text>
+          </g>
+        </svg>
+        <figcaption>Chart 7 · necks we buy from. Pins are lots, not decoration. The land stays whole; nothing is cropped.</figcaption>
+      </figure>
+    </section>
+
+    <section id="lots">
+      <p class="section-kicker">Open lots · 10 Nov</p>
+      <h2>Tonight’s ledger</h2>
+      <div class="lot">
+        <div class="lot-code">LOT 14-E<br>48°40′N<br>01°50′W</div>
+        <div>
+          <p>Washed cow’s rind, 60 days. Affineur Hélène Corlay, Pointe de Grouin.</p>
+          <p class="meta">280g · £18 · still on the neck this morning</p>
+        </div>
+        <a class="take" href="#order">Take lot</a>
+      </div>
+      <div class="lot">
+        <div class="lot-code">LOT 09-N<br>55°50′N<br>05°25′W</div>
+        <div>
+          <p>Barrel herring, 14 days salt. Smoker Iain MacPhee, Tarbert neck, Kintyre.</p>
+          <p class="meta">200g · £14 · one barrel left</p>
+        </div>
+        <a class="take" href="#order">Take lot</a>
+      </div>
+      <div class="lot">
+        <div class="lot-code">LOT 03-S<br>45°25′N<br>12°22′E</div>
+        <div>
+          <p>Mixed-milk wash, cave. Marta Rizzo, Lido di Venezia.</p>
+          <p class="meta">250g · £16 · cool-shipped</p>
+        </div>
+        <a class="take" href="#order">Take lot</a>
+      </div>
+      <div class="lot">
+        <div class="lot-code">LOT 21-W<br>56°58′N<br>09°15′E</div>
+        <div>
+          <p>Cold-smoked eel. Sigrid Holm, Limfjord neck.</p>
+          <p class="meta">180g · £22 · smoked 8 Nov</p>
+        </div>
+        <a class="take" href="#order">Take lot</a>
+      </div>
+    </section>
+
+    <section id="method" class="prose" style="margin-top: var(--space-5);">
+      <h2>Method</h2>
+      <p>A lot opens when the producer wires the affineur’s note, the GPS of the workshop, and the weight. We print that as a label. If we cannot name the person and the neck, we do not list the lot. That is the whole anti-fake.</p>
+      <p>We do not sell copies of famous inland names. Grouin is Grouin. Tarbert is Tarbert.</p>
+    </section>
+
+    <section id="producers" class="producers">
+      <h2>Producers on the chart</h2>
+      <p class="producer-line">CORLAY, H. · washed rind · Pointe de Grouin · 14-E</p>
+      <p class="producer-line">MACPHEE, I. · barrel herring · Tarbert neck · 09-N</p>
+      <p class="producer-line">RIZZO, M. · mixed-milk wash · Lido di Venezia · 03-S</p>
+      <p class="producer-line">HOLM, S. · cold-smoked eel · Limfjord neck · 21-W</p>
+    </section>
+
+    <section id="order" class="prose">
+      <h2>Order</h2>
+      <p>Lots ship cold, Tuesday and Friday. You get the same label we filed: code, producer, coordinate. If a lot cannot be traced, it is not for sale — that would make this shop a lie.</p>
+      <a class="action" href="#lots">Take a named lot</a>
+    </section>
+  </main>
+  <footer>
+    Isthmus Lot · Chart 7 · 48°40.1′ N · Not a smell joke · Not a supermarket copy
+  </footer>
+</body>
+</html>

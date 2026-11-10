@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cover Board — directions</title>
+  <style>
+    body { margin: 0; background: #d8c8b0; color: #1c1408; font: 14px/1.4 Cantarell, "Liberation Sans", sans-serif; }
+    header { padding: 24px 32px 8px; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 500; margin: 0 0 8px; }
+    .note { font-size: 13px; max-width: 70ch; }
+    .grid { display: grid; gap: 28px; padding: 16px 32px 48px; max-width: 1100px; margin: 0 auto; }
+    article { background: #f6ebc9; border: 1px solid #1c1408; }
+    article h2 { margin: 0; padding: 10px 14px; font: 12px/1.3 "Liberation Mono", monospace; text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid #1c1408; }
+    .pick { outline: 3px solid #c41e12; }
+    .screen { min-height: 280px; padding: 0; }
+    .cost { padding: 10px 14px; font-size: 13px; border-top: 1px solid #1c1408; }
+    .sheet { padding: 14px 16px; background: #f6ebc9; }
+    .tape { height: 10px; background: #c41e12; }
+    .sheet table { width: 100%; border-collapse: collapse; font: 12px/1.35 "Liberation Mono", monospace; }
+    .sheet td, .sheet th { text-align: left; border-bottom: 1px dashed #1c1408; padding: 5px 4px; font-weight: 400; }
+    .mark { background: #111; color: #f4ead0; min-height: 280px; padding: 20px; }
+    .x { color: #e23c2b; font: 48px/1 "Liberation Mono", monospace; }
+    .cork { background: #8a6a3a; min-height: 280px; padding: 16px; }
+    .pin { background: #f6ebc9; padding: 10px; margin: 8px 0; transform: rotate(-1.2deg); font: 12px/1.3 "Liberation Mono", monospace; }
+    .reject { padding: 0 32px 40px; font-size: 13px; max-width: 70ch; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cover Board — three directions</h1>
+    <p class="note">Rejected default: Inter, a gradient headline, three equal feature cards. Brief forbids it (Q4). Recommendation: Call sheet — it is the paper this person already reads at 10pm.</p>
+  </header>
+  <div class="grid">
+    <article class="pick">
+      <h2>A. Call sheet — recommended</h2>
+      <div class="screen">
+        <div class="tape" aria-hidden="true"></div>
+        <div class="sheet">
+          <p style="margin:0;font:11px/1 Liberation Mono,monospace;">CO. MIDLAND BALLET · CALL 19:30 · 10 NOV</p>
+          <h3 style="margin:6px 0 10px;font:500 22px/1 Cantarell,sans-serif;">Cover Board</h3>
+          <table>
+            <tr><th>Role</th><th>Injured</th><th>Coryphée cover</th><th>Hrs</th></tr>
+            <tr><td>Odile</td><td>M. Chen — out</td><td>L. Okoye — learned</td><td>18</td></tr>
+            <tr><td>Siegfried</td><td>—</td><td>R. Patel standby</td><td>12</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="cost">Signature: the landing is a call sheet with a strip of stage tape. Cost: looks like paper, not a “product”; some visitors will miss the SaaS cue.</p>
+    </article>
+    <article>
+      <h2>B. Mark-out</h2>
+      <div class="screen mark">
+        <p class="x">X</p>
+        <h3 style="font:400 28px/1 Cantarell,sans-serif;margin:8px 0;">Spike the cover.</h3>
+        <p style="max-width:28ch;">Black stage, neon tape. Who has learned Odile. Who is free.</p>
+      </div>
+      <p class="cost">Signature: floor marks as UI. Cost: theatrical; closer to costume than to the tool they use at a desk at 10pm.</p>
+    </article>
+    <article>
+      <h2>C. Cork board</h2>
+      <div class="screen cork">
+        <div class="pin">Odile — Chen OUT — ask Okoye (18h)</div>
+        <div class="pin" style="transform:rotate(1.4deg);margin-left:24px;">Siegfried — Patel 12h — free after 21:00</div>
+        <div class="pin">Company call 19:30</div>
+      </div>
+      <p class="cost">Signature: pinned rehearsal notes. Cost: the mess of a real board; under pressure, overlapping paper is the problem the software is meant to end.</p>
+    </article>
+  </div>
+  <p class="reject">Q6 pick (owner’s assistant at the owner’s request): Call sheet, because it is closest to the call-sheet/casting-board world.</p>
+</body>
+</html>

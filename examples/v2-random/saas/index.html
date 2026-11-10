@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cover Board — coryphée covers, tonight</title>
+  <style>
+    :root {
+      --color-ink: #1c1408;
+      --color-paper: #f6ebc9;
+      --color-tape: #c41e12;
+      --color-tape-type: #fff8ee;
+      --color-muted: #5c4a32;
+      --font-display: Cantarell, Liberation Sans, sans-serif;
+      --font-board: Liberation Mono, Cousine, monospace;
+      --font-size-board: 13px;
+      --font-size-body: 16px;
+      --font-size-section: 20px;
+      --font-size-name: 28px;
+      --font-size-alert: 40px;
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 48px;
+      --space-6: 64px;
+      --radius: 0px;
+      --row-height: 48px;
+      --focus-width: 2px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
+    body {
+      font-family: var(--font-display);
+      font-size: var(--font-size-body);
+      line-height: 1.4;
+    }
+    a { color: var(--color-ink); }
+    a:focus-visible, button:focus-visible {
+      outline: var(--focus-width) solid var(--color-ink);
+      outline-offset: var(--focus-width);
+    }
+    .tape {
+      margin: 0;
+      min-height: var(--row-height);
+      background: var(--color-tape);
+      color: var(--color-tape-type);
+      font-family: var(--font-board);
+      font-size: var(--font-size-board);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-2);
+      letter-spacing: 0.06em;
+    }
+    .tape a {
+      color: var(--color-tape-type);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: var(--row-height);
+      padding: 0 var(--space-2);
+      border-left: 1px solid var(--color-tape-type);
+    }
+    .tape a:hover { background: var(--color-ink); }
+    .tape a:active { background: var(--color-ink); color: var(--color-paper); }
+    .sheet {
+      max-width: 960px;
+      margin: var(--space-4) auto var(--space-6);
+      padding: 0 var(--space-2);
+    }
+    .who {
+      font-family: var(--font-board);
+      font-size: var(--font-size-board);
+      margin: 0 0 var(--space-1);
+      color: var(--color-muted);
+    }
+    h1 {
+      font-size: var(--font-size-name);
+      font-weight: 500;
+      margin: 0 0 var(--space-2);
+    }
+    .alert {
+      font-size: var(--font-size-alert);
+      font-weight: 500;
+      line-height: 1.15;
+      margin: 0 0 var(--space-2);
+    }
+    .floor { margin: 0 0 var(--space-4); overflow: visible; }
+    .floor svg { width: 100%; height: auto; display: block; border: 1px solid var(--color-ink); }
+    .floor figcaption {
+      font-family: var(--font-board);
+      font-size: var(--font-size-board);
+      color: var(--color-muted);
+      margin-top: var(--space-1);
+    }
+    .lede { max-width: 40ch; margin: 0 0 var(--space-3); }
+    h2 {
+      font-size: var(--font-size-section);
+      font-weight: 500;
+      margin: var(--space-5) 0 var(--space-2);
+      font-family: var(--font-display);
+    }
+    .board {
+      border: 1px solid var(--color-ink);
+      border-radius: var(--radius);
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 7rem 1fr 1.4fr 4rem;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-2);
+      font-family: var(--font-board);
+      font-size: var(--font-size-board);
+      border-bottom: 1px dashed var(--color-ink);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row:hover { border-bottom-style: solid; }
+    .head { font-weight: 700; border-bottom: 1px solid var(--color-ink); }
+    .out { color: var(--color-tape); }
+    .legend { max-width: 42ch; }
+    .legend p { margin: 0 0 var(--space-2); }
+    footer {
+      border-top: 1px solid var(--color-ink);
+      padding: var(--space-3) var(--space-2);
+      font-family: var(--font-board);
+      font-size: var(--font-size-board);
+    }
+    @media (max-width: 700px) {
+      .alert { font-size: var(--font-size-name); }
+      .head { display: none; }
+      .row {
+        grid-template-columns: 7rem 1fr;
+        padding: var(--space-2);
+      }
+      .row > span:first-child { align-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <p class="tape">
+    <span>MIDLAND BALLET · SWAN LAKE · 10 NOV · CALL 19:30 · STAGE TAPE</span>
+    <a href="#board">Open tonight’s board</a>
+  </p>
+  <main class="sheet">
+    <p class="who">FOR THE REHEARSAL DIRECTOR · 22:07 · SOLOIST JUST OUT</p>
+    <h1>Cover Board</h1>
+    <p class="alert">Odile — Chen OUT</p>
+    <p class="lede">Coryphée L. Okoye has learned the role, 18 rehearsal hours, free after 21:00. This is cover planning. It is not ticketing, payroll, or choreography.</p>
+    <figure class="floor">
+      <svg viewBox="0 0 720 120" role="img" aria-labelledby="floorTitle floorDesc">
+        <title id="floorTitle">Spike marks for tonight’s call</title>
+        <desc id="floorDesc">A printed diagram of the stage with red tape marks: X downstage left for Odile, a centre line for Siegfried, a T for the Queen.</desc>
+        <rect width="720" height="120" fill="#f6ebc9"/>
+        <g fill="none" fill-opacity="0" stroke="#1c1408" stroke-width="1">
+          <rect x="24" y="16" width="672" height="88"/>
+          <line x1="360" y1="16" x2="360" y2="104"/>
+        </g>
+        <g fill="none" fill-opacity="0" stroke="#c41e12" stroke-width="4" stroke-linecap="square">
+          <path d="M90 44 L130 84 M130 44 L90 84"/>
+          <path d="M348 36 V92"/>
+          <path d="M520 40 H580 M550 40 V88"/>
+        </g>
+        <g fill="#1c1408" font-family="Liberation Mono, Cousine, monospace" font-size="11">
+          <text x="78" y="102">ODILE SL</text>
+          <text x="328" y="112">SIEGFRIED</text>
+          <text x="522" y="102">QUEEN SR</text>
+        </g>
+      </svg>
+      <figcaption>Spike tape on the sheet · Odile SL · Siegfried CS · Queen SR · the diagram stays whole</figcaption>
+    </figure>
+
+    <h2 id="board">Tonight’s board</h2>
+    <div class="board">
+      <div class="row head">
+        <span>Role</span>
+        <span>Cast</span>
+        <span>Coryphée cover</span>
+        <span>Hrs</span>
+      </div>
+      <div class="row">
+        <span>Odile</span>
+        <span class="out">M. Chen — OUT ankle</span>
+        <span>L. Okoye — learned — free 21:00</span>
+        <span>18</span>
+      </div>
+      <div class="row">
+        <span>Siegfried</span>
+        <span>R. Vale — dancing</span>
+        <span>R. Patel — standby</span>
+        <span>12</span>
+      </div>
+      <div class="row">
+        <span>Queen</span>
+        <span>A. Brooks — dancing</span>
+        <span>N. Singh — learned</span>
+        <span>9</span>
+      </div>
+      <div class="row">
+        <span>Rothbart</span>
+        <span>K. Ivers — dancing</span>
+        <span>J. Morel — 4h short of full</span>
+        <span>8</span>
+      </div>
+      <div class="row">
+        <span>Cygnets</span>
+        <span>four named</span>
+        <span>D. Ruiz first cover, all learned</span>
+        <span>22</span>
+      </div>
+    </div>
+
+    <h2>How a cover is chosen</h2>
+    <div class="legend">
+      <p>The board asks three facts the call sheet always had: has this coryphée learned the role, how many hours on it, are they free. It suggests Okoye because all three are yes.</p>
+      <p>You still commission the cover. The software does not send the notice; it stops you guessing in the corridor.</p>
+      <p>What it will not do: sell seats, run payroll, or write choreography. Those would be a different product, and a lie on this sheet.</p>
+    </div>
+
+    <h2>Rehearsal hours on file</h2>
+    <div class="board">
+      <div class="row head"><span>Coryphée</span><span>Roles learned</span><span>Last studio</span><span>Hrs</span></div>
+      <div class="row"><span>L. Okoye</span><span>Odile, Queen, cygnet</span><span>9 Nov 14:00</span><span>18</span></div>
+      <div class="row"><span>R. Patel</span><span>Siegfried, Rothbart</span><span>8 Nov 11:00</span><span>12</span></div>
+      <div class="row"><span>N. Singh</span><span>Queen</span><span>7 Nov 16:30</span><span>9</span></div>
+    </div>
+  </main>
+  <footer>
+    Cover Board · replaces the paper call · peculiar on purpose · Midland Ballet file
+  </footer>
+</body>
+</html>

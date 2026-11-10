@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Night Trace — directions</title>
+  <style>
+    body { margin: 0; background: #ddd6c4; color: #1a1a1a; font: 14px/1.45 "Noto Sans", "Liberation Sans", sans-serif; }
+    header { padding: 24px 32px 8px; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 500; margin: 0 0 8px; }
+    .note { font-size: 13px; max-width: 70ch; }
+    .grid { display: grid; gap: 28px; padding: 16px 32px 48px; max-width: 1100px; margin: 0 auto; }
+    article { background: #f3efe4; border: 1px solid #1a1a1a; }
+    article h2 { margin: 0; padding: 10px 14px; font: 12px/1.3 "JetBrains Mono", "Liberation Mono", monospace; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #1a1a1a; }
+    .pick { outline: 3px solid #0b5c5c; }
+    .screen { min-height: 280px; padding: 16px; }
+    .cost { padding: 10px 14px; font-size: 13px; border-top: 1px solid #1a1a1a; }
+    .drum { background:
+      repeating-linear-gradient(0deg, transparent, transparent 7px, #d4cdb8 7px, #d4cdb8 8px),
+      repeating-linear-gradient(90deg, transparent, transparent 7px, #e0dac8 7px, #e0dac8 8px); }
+    .lab { background: #e8e4d8; }
+    .scope { background: #0c1210; color: #b6f0c2; font-family: "JetBrains Mono", monospace; }
+    .reject { padding: 0 32px 40px; font-size: 13px; max-width: 70ch; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Night Trace — three directions</h1>
+    <p class="note">Rejected default: a centred phone mock and two store badges as the whole idea. Brief forbids it (Q4). Recommendation: Drum paper — scribing and composite are what a seismograph actually does.</p>
+  </header>
+  <div class="grid">
+    <article class="pick">
+      <h2>A. Drum paper — recommended</h2>
+      <div class="screen drum">
+        <p style="margin:0;font:11px/1 JetBrains Mono,monospace;">00:00        03:00        06:00</p>
+        <svg viewBox="0 0 360 90" width="100%" height="90" aria-hidden="true">
+          <path d="M0 50 L20 50 L28 22 L34 70 L42 50 L80 50 L90 18 L98 78 L108 50 L200 50 L210 24 L218 66 L226 50 L360 50" fill="none" stroke="#1a1a1a" stroke-width="1.4"/>
+          <path d="M0 52 L40 52 L48 30 L56 64 L70 52 L180 52 L192 28 L200 60 L360 52" fill="none" stroke="#0b5c5c" stroke-width="1" opacity=".7"/>
+        </svg>
+        <h3 style="font:500 22px/1.1 Noto Sans,sans-serif;margin:8px 0 4px;">Night Trace</h3>
+        <p style="margin:0;max-width:36ch;">A scribed record of grinding. On-device. Not a diagnosis.</p>
+      </div>
+      <p class="cost">Signature: the page is drum paper; nights overlay as traces. Cost: no phone in the hero — some will not clock it as an app until the download line.</p>
+    </article>
+    <article>
+      <h2>B. Lab note</h2>
+      <div class="screen lab">
+        <p style="font:12px/1.3 JetBrains Mono,monospace;margin:0 0 8px;">SUBJECT · self  DATE · 10 Nov</p>
+        <h3 style="margin:0 0 8px;font:500 20px/1.2 Noto Sans,sans-serif;">Jaw sore on waking. Tag coffee?</h3>
+        <p style="max-width:34ch;margin:0;">Clipboard fields, annotations in the margin. A note you bring to the dentist.</p>
+      </div>
+      <p class="cost">Signature: annotated clipboard. Cost: “scribing” becomes handwriting, not a needle on a drum.</p>
+    </article>
+    <article>
+      <h2>C. Oscilloscope</h2>
+      <div class="screen scope">
+        <p style="margin:0;font-size:11px;">CH1 · GNASH · LIVE</p>
+        <svg viewBox="0 0 360 80" width="100%" height="80" aria-hidden="true">
+          <path d="M0 40 L30 40 L38 10 L46 70 L60 40 L360 40" fill="none" stroke="#b6f0c2" stroke-width="1.5"/>
+        </svg>
+        <h3 style="font:400 18px/1.2 JetBrains Mono,monospace;">Trace overnight.</h3>
+      </div>
+      <p class="cost">Signature: green CRT. Cost: gadget-dark; farther from paper, closer to a toy instrument, and easy to read as horror-monitor.</p>
+    </article>
+  </div>
+  <p class="reject">Q6 pick (owner’s assistant at the owner’s request): Drum paper, because it is closest to the seismograph-paper world.</p>
+</body>
+</html>

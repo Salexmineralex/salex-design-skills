@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Night Trace — a scribed record of grinding</title>
+  <style>
+    :root {
+      --color-ink: #1a1a1a;
+      --color-paper: #f3efe4;
+      --color-grid: #c9c2b0;
+      --color-needle: #0b5c5c;
+      --color-muted: #4a4a42;
+      --color-white: #fffcf6;
+      --font-display: Noto Sans, Liberation Sans, sans-serif;
+      --font-axis: JetBrains Mono, Liberation Mono, monospace;
+      --font-size-axis: 12px;
+      --font-size-body: 16px;
+      --font-size-section: 20px;
+      --font-size-name: 28px;
+      --font-size-numeral: 44px;
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 48px;
+      --space-6: 64px;
+      --radius: 0px;
+      --row-height: 48px;
+      --focus-width: 2px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
+    body {
+      font-family: var(--font-display);
+      font-size: var(--font-size-body);
+      line-height: 1.45;
+    }
+    a { color: var(--color-ink); }
+    a:focus-visible, button:focus-visible {
+      outline: var(--focus-width) solid var(--color-ink);
+      outline-offset: var(--focus-width);
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-ink);
+      min-height: var(--row-height);
+    }
+    .mark {
+      margin: 0;
+      padding: 0 var(--space-2);
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      display: flex;
+      align-items: center;
+      min-height: var(--row-height);
+    }
+    nav { display: flex; flex-wrap: wrap; }
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: var(--row-height);
+      padding: 0 var(--space-2);
+      text-decoration: none;
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      border-left: 1px solid var(--color-ink);
+    }
+    nav a:hover { color: var(--color-needle); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: var(--space-4) var(--space-2) var(--space-6); }
+    .axis {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      color: var(--color-muted);
+      margin: 0 0 var(--space-1);
+    }
+    figure { margin: 0 0 var(--space-3); overflow: visible; }
+    figure svg { width: 100%; height: auto; display: block; border: 1px solid var(--color-ink); }
+    figcaption {
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      color: var(--color-muted);
+      margin-top: var(--space-1);
+    }
+    h1 {
+      font-size: var(--font-size-name);
+      font-weight: 500;
+      margin: 0 0 var(--space-2);
+    }
+    .lede { max-width: 40ch; margin: 0 0 var(--space-3); }
+    .numeral {
+      font-family: var(--font-axis);
+      font-size: var(--font-size-numeral);
+      line-height: 1;
+      margin: 0;
+    }
+    .numeral span {
+      display: block;
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      color: var(--color-muted);
+      margin-top: var(--space-1);
+    }
+    h2 {
+      font-size: var(--font-size-section);
+      font-weight: 500;
+      margin: var(--space-5) 0 var(--space-2);
+    }
+    .legend { max-width: 42ch; }
+    .legend p { margin: 0 0 var(--space-2); }
+    .nights {
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+    }
+    .nights p {
+      margin: 0;
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-grid);
+      max-width: 52ch;
+    }
+    .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      height: var(--row-height);
+      padding: 0 var(--space-3);
+      background: var(--color-needle);
+      color: var(--color-white);
+      text-decoration: none;
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+      border-radius: var(--radius);
+      border: 1px solid var(--color-needle);
+    }
+    .action:hover { background: var(--color-ink); border-color: var(--color-ink); }
+    .action:active { background: var(--color-ink); color: var(--color-paper); }
+    footer {
+      border-top: 1px solid var(--color-ink);
+      padding: var(--space-3) var(--space-2);
+      font-family: var(--font-axis);
+      font-size: var(--font-size-axis);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="mark">NIGHT TRACE · DRUM 1 · ON-DEVICE · NO UPLOAD</p>
+    <nav aria-label="Record">
+      <a href="#strip">Strip</a>
+      <a href="#week">Week</a>
+      <a href="#scope">Scope</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <p class="axis"><span>00:00</span><span>02:00</span><span>04:00</span><span>06:00</span></p>
+    <figure id="strip">
+      <svg viewBox="0 0 720 240" role="img" aria-labelledby="drumTitle drumDesc">
+        <title id="drumTitle">Last night scribed on drum paper, with a weekly composite under it</title>
+        <desc id="drumDesc">Gridded seismograph paper. Grey traces from six earlier nights, a teal live trace with clusters at 02:14 and 03:41, and a needle at the right edge.</desc>
+        <rect width="720" height="240" fill="#f3efe4"/>
+        <g fill="none" fill-opacity="0" stroke="#c9c2b0" stroke-width="1">
+          <path d="M0 20 H720 M0 40 H720 M0 60 H720 M0 80 H720 M0 100 H720 M0 120 H720 M0 140 H720 M0 160 H720 M0 180 H720 M0 200 H720 M0 220 H720"/>
+          <path d="M40 0 V240 M80 0 V240 M120 0 V240 M160 0 V240 M200 0 V240 M240 0 V240 M280 0 V240 M320 0 V240 M360 0 V240 M400 0 V240 M440 0 V240 M480 0 V240 M520 0 V240 M560 0 V240 M600 0 V240 M640 0 V240 M680 0 V240"/>
+        </g>
+        <path fill="#f3efe4" fill-opacity="0" stroke="#4a4a42" stroke-width="1"
+          d="M0 128 L80 128 L92 110 L104 140 L120 128 L240 128 L252 118 L264 136 L280 128 L500 128 L512 112 L524 142 L540 128 L720 128"/>
+        <path fill="#f3efe4" fill-opacity="0" stroke="#4a4a42" stroke-width="1"
+          d="M0 132 L60 132 L70 120 L82 144 L96 132 L300 132 L310 122 L322 140 L336 132 L720 132"/>
+        <path fill="#f3efe4" fill-opacity="0" stroke="#0b5c5c" stroke-width="1.75"
+          d="M0 120 L200 120 L214 64 L222 176 L232 70 L242 168 L252 120 L400 120 L418 48 L428 190 L438 56 L448 120 L520 120 L534 72 L544 166 L554 120 L720 120"/>
+        <circle cx="700" cy="120" r="7" fill="#0b5c5c"/>
+        <line x1="700" y1="40" x2="700" y2="200" stroke="#0b5c5c" stroke-width="1" fill="none"/>
+      </svg>
+      <figcaption>Live needle in teal · composite nights in muted ink · grid is printed drum paper, shown whole</figcaption>
+    </figure>
+
+    <h1>Night Trace</h1>
+    <p class="lede">The phone stays on the nightstand. It listens on this device, draws grinding as a scribed line, and overlays the week so a pattern can show. Not a diagnosis. Not a cure. Audio never leaves the phone.</p>
+    <p class="numeral">18<span>events · last night · tagged alcohol</span></p>
+
+    <h2 id="week">This week, overlaid</h2>
+    <div class="nights">
+      <p>MON 02:14 cluster · 11 events · tag: stress</p>
+      <p>TUE quiet baseline · 2 events · no tag</p>
+      <p>WED 03:41 cluster · 18 events · tag: alcohol</p>
+      <p>THU 01:50 brief · 6 events · tag: coffee</p>
+      <p>FRI not yet scribed</p>
+    </div>
+
+    <h2 id="scope">What this is</h2>
+    <div class="legend">
+      <p>A record you can take to a dentist. You tag coffee, stress, or alcohol against a night so the overlay is not just a shape.</p>
+      <p>It does not say you have bruxism. It does not treat it. If the microphone is off, the strip stays flat and the error line reads: Mic permission off — nothing was recorded.</p>
+      <a class="action" href="#strip">Take last night to the dentist</a>
+    </div>
+  </main>
+  <footer>
+    Night Trace · scribing on-device · composite of nights · gnash as a line, not a gag
+  </footer>
+</body>
+</html>
