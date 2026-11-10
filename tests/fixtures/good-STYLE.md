@@ -8,6 +8,9 @@ Tide tables for working harbors, read by skippers at dawn. The tension: it must 
 ## Principles
 - Exact, not decorated.
 
+## Signature
+A bookish serif on warm paper, like a printed almanac, with one coral action the colour of a harbor buoy. Display type is clearly larger than the tables. Charts and marks stay whole; they are not cropped to silence overflow.
+
 ## Decisions
 
 ### D1. Serif text on warm paper

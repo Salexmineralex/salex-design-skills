@@ -64,8 +64,8 @@ Sources: Müller-Brockmann, *Grid Systems in Graphic Design*; Refactoring UI.
 - **Start with too much space, then remove it.** Cramped layouts are the most common amateur mistake.
 - **A grid makes things look intentional.** Twelve columns are flexible on the web. Fewer alignment lines read as calmer.
 - **Density follows use:** tools used for hours can be dense, marketing pages should breathe.
-- **Touch targets:** at least 44×44px (Apple HIG) or 48×48dp (Material). WCAG 2.2's minimum is 24×24px.
-- **Design mobile first** when the product is used on phones, and check the style holds at 375px wide.
+- **Touch targets:** at least 44×44px (Apple HIG) or 48×48dp (Material). WCAG 2.2's minimum is 24×24px. That size is a floor for tapping, not a visual style. Buttons share height with the row they sit in. Isolated 44px pills in a sparse header read as chrome, not as design.
+- **Design mobile first** when the product is used on phones, and check the style holds at 375px wide. Cropping a decorative picture until overflow stops is not a mobile strategy; change the layout so the picture stays whole.
 
 ## Shape, depth and texture
 
@@ -128,6 +128,16 @@ A trend is allowed only when you can state the reason without the words "popular
 - **Dark mode by default:** fits tools used at night, media, developer tools. Light usually reads better for long text and in daylight.
 - **Huge hero type:** strong for editorial and brand pages, wasteful on tools.
 - **Everything Inter, rounded 8px cards, soft gray shadows:** a perfectly fine default that says nothing. Choose it on purpose or not at all.
+
+## Look (not a score)
+
+A page can pass every measurement and still not be designed. Check these by eye. There is no score.
+
+- **A signature move.** One thing people will remember. If you can delete it and the page still "works", it was never a signature.
+- **Hierarchy and scale contrast.** One focal point. Display type is clearly not body type. Quiet things are actually quiet.
+- **Imagery strategy.** Pictures have a job and a crop. `overflow: hidden` on a decorative asset until a script stops complaining is hiding the picture, not composing it.
+- **Chrome is a system.** Controls in a row share one height. 44px is a tap floor.
+- **Reject the default.** The layout a model reaches for first on this kind of product (SaaS: navy or dark, Inter, three cards, gradient headline; ecommerce: white grid of cards; app landing: phone mock and two store buttons) is not allowed unless the brief gives a reason to use it. Name the default and refuse it.
 
 ## Sources
 

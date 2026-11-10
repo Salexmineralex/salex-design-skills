@@ -29,6 +29,18 @@ What it does:
 
 A control that was already dead before a looks-only change isn't caused by the restyle: tell the user. Look at the captures yourself too, and press Tab through the page: numbers miss things.
 
+## 1b. Look (not a score)
+
+After the numbers pass, look at the 1440 and 375 captures against `STYLE.md`'s **Signature**. This is not a score and not a pass mark. If any of these is true, it is a design fail: go back to `taste-why`, then rebuild. Do not argue it away with a measurement PASS.
+
+- **Signature missing.** The named move is not visible at both widths.
+- **Flat hierarchy.** Display and body sit in a narrow band; nothing is clearly the focal point.
+- **Cropped decoration.** A wave, poster or product shot is sliced by `overflow: hidden` as the way to pass overflow. Pictures stay whole, or the layout changes.
+- **44px chrome.** Buttons look like isolated accessibility blocks, not a system that shares height with their row.
+- **Safe default.** The page is the layout a model ships first for this product type (SaaS: Inter, three cards, gradient headline; ecommerce: white grid; app: phone mock + store buttons) and the brief did not ask for that default. Name what is default, in words, and reject it.
+
+Write what you saw into the validate folder as `look.md`: three to eight lines, no score. If you reject, say which bullet and why.
+
 ## 2. A judge on a different model, if one is available
 
 It catches what the why-reviewer can't: a reason that reads well and doesn't show in the result. It **never sets a score.** Run it on the final captures; if you change the build because of it, show it the new captures once. Start one sub-agent on a different model from the designer, in the foreground. If none is available, skip this and say so. Two steps, in this order:

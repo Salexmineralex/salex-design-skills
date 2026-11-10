@@ -5,25 +5,39 @@ Usage: python3 why-lint.py STYLE.md
 
 It reads the form, not the taste: the sections are in order, every decision has its
 reason, source and trade-off, none rests on fashion, nothing is unresolved, no more
-than three questions went to the user, every decision is kept plainly or on a recorded
-answer ("kept" or "kept (Q1)"), and every token traces to a decision.
+than six questions went to the user (five at the brief, one at the direction pick),
+every decision is kept plainly or on a recorded answer ("kept" or "kept (Q1)"), every
+token traces to a decision, a Signature names the move the page must show, and a Why
+whose only fact is "the source already did it" fails unless Source is brand.
 
 Prints one line per problem. Exits 1 if there are any, 0 if the handbook is finished.
 """
 import re
 import sys
 
-SECTIONS = ["Idea", "Principles", "Decisions", "Tokens"]
+SECTIONS = ["Idea", "Principles", "Signature", "Decisions", "Tokens"]
 FIELDS = ["Decision", "Why", "Instead of", "Breaks if removed", "Trade-off", "Source", "Reviewed"]
-SOURCES = r"^(brief|idea|moodboard|mood board|user answer|brand|handbook)\b"
+SOURCES = r"^(brief|idea|moodboard|mood board|user answer|brand|handbook|assumption)\b"
 FASHION = re.compile(
     r"\b(looks? (modern|clean|sleek|nice|good|premium|professional)|feels? (modern|clean|sleek|premium)"
     r"|it'?s modern|on[- ]trend|trendy|everyone|everybody|popular|industry standard|best practice"
     r"|what (people|users) expect|standard for|common pattern|contemporary)\b",
     re.I,
 )
+# A Why that only points at the existing page. Allowed when Source is brand.
+INHERIT = re.compile(
+    r"\b("
+    r"already (uses|ships|sets|has|does)|"
+    r"(the )?(source|original|rendered page|homepage|existing page|brand) already|"
+    r"as rendered|"
+    r"copied from the source|"
+    r"the stack the homepage already|"
+    r"those are the colou?rs the rendered"
+    r")\b",
+    re.I,
+)
 MIN_WHY_WORDS = 10
-MAX_QUESTIONS = 3
+MAX_QUESTIONS = 6
 
 
 def sections(text):
@@ -55,6 +69,10 @@ def check(text):
     if order and "Tokens" in order and order[-1] != "Tokens":
         problems.append("## Tokens must be the last section")
 
+    sig = body.get("Signature", "").strip()
+    if "Signature" in body and len(sig.split()) < 6:
+        problems.append("## Signature is too thin; name the one move the page must show")
+
     ids = set()
     cited = []
     entries = re.split(r"^### ", body.get("Decisions", ""), flags=re.M)[1:]
@@ -75,15 +93,19 @@ def check(text):
             if not fields.get(field):
                 problems.append(f"{title}: missing {field}")
         why = fields.get("Why", "")
+        source = fields.get("Source", "")
         if why:
             hit = FASHION.search(why)
             if hit:
                 problems.append(f'{title}: Why rests on fashion ("{hit.group(0)}"); give the reason it serves the idea')
             elif len(why.split()) < MIN_WHY_WORDS:
                 problems.append(f"{title}: Why is too short to be a reason ({len(why.split())} words)")
-        source = fields.get("Source", "")
+            elif INHERIT.search(why) and not re.match(r"^brand\b", source, flags=re.I):
+                problems.append(
+                    f'{title}: Why only says the source already did it; that is not a reason unless this run is brand-locked'
+                )
         if source and not re.match(SOURCES, source, flags=re.I):
-            problems.append(f"{title}: Source must be the brief, the moodboard, a user answer, the brand or the handbook")
+            problems.append(f"{title}: Source must be the brief, the moodboard, a user answer, the brand, the handbook or an assumption")
         reviewed = fields.get("Reviewed", "").strip().rstrip(".").lower()
         kept = re.fullmatch(r"kept(?: \(q(\d+)\))?", reviewed)
         if reviewed and not reviewed.startswith("kept"):
@@ -101,7 +123,9 @@ def check(text):
         if n not in asked:
             problems.append(f"{title}: kept on Q{n}, but ## Questions asked has no Q{n}")
     if len(questions) > MAX_QUESTIONS:
-        problems.append(f"{len(questions)} questions asked; the limit is {MAX_QUESTIONS}. The brief is empty: go back to it")
+        problems.append(
+            f"{len(questions)} questions asked; the limit is {MAX_QUESTIONS} (five at the brief, one at the direction pick). The brief is empty: go back to it"
+        )
 
     tokens = 0
     for line in body.get("Tokens", "").splitlines():

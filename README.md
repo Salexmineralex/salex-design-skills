@@ -20,19 +20,22 @@ Needs Python 3 and Node (the screenshot helper uses Playwright, which downloads 
 
 **The order:** document first, design second. Nothing gets built until `STYLE.md` is finished, because a reason written after the design is an excuse.
 
-1. **Your idea** (`/taste-brief`): short, with its tension. If it's ambiguous, it asks for a mood board, or proposes one to pick from, and records concrete traits.
-2. **Two or three directions** (`/taste-directions`), shown as small real screens. You pick.
-3. **The handbook** (`/taste-why`): one decision at a time, each past an anti-slop reviewer that judges the reason and never the style.
+1. **Your idea** (`/taste-brief`): short, with its tension. If the idea is thin, it stops and asks (audience, one feeling, what to borrow, what to avoid, what must be true of the product) in one batch of at most five. It does not invent the answers.
+2. **Two or three directions** (`/taste-directions`), shown as small real screens, each with a named signature move. You pick (at most one more question).
+3. **The handbook** (`/taste-why`): a Signature, then one decision at a time, each past an anti-slop reviewer that judges the reason and never the style. “The source already did it” is not a why unless this is brand mode.
 4. **The build:** one sample page, or your app if you ask, only from `STYLE.md`.
-5. **Measurement** (`/taste-validate`): objective checks and captures at 1440 and 375.
+5. **Measurement** (`/taste-validate`): objective checks and captures at 1440 and 375, then a look at whether the signature shows — no score.
 
 Only you start it: type `/taste`, optionally with your idea.
 
 ## What's in `STYLE.md`
 
-The idea and its tension, the principles that follow from it, then an entry per decision, then tokens as the last mechanical section:
+The idea and its tension, the principles that follow from it, a named signature move, then an entry per decision, then tokens as the last mechanical section:
 
 ```md
+## Signature
+The one named move the page must show, with hierarchy and how pictures stay whole.
+
 ### D1. Serif text on warm paper
 - **Decision:** what it is, with values.
 - **Why:** the problem it solves, tied to your idea.
@@ -47,7 +50,7 @@ The idea and its tension, the principles that follow from it, then an entry per 
 
 ## When it asks you
 
-If a why can't be answered from the brief, your idea or the mood board, it asks instead of inventing one: one specific question about one decision, with the options and what each costs, at most three in a project. Your answer goes into `STYLE.md` as the source of that decision. If it would need more, the brief is empty, and it goes back to that.
+If the idea is thin, it asks before it writes any why: up to five questions in one batch at the brief (who it is for, the one feeling, what to borrow, what to avoid, what must be true of the product), plus at most one at the direction pick. Last resort means only what cannot be inferred from files and your words. It does not invent stand-in answers. Your answer goes into the brief and into `STYLE.md` as the source of that decision. An assumption from a file is logged as an assumption, never dressed as a why.
 
 ## How results are judged
 
@@ -67,10 +70,10 @@ Each works on its own. They hand over through files.
 
 | Skill | Does | Writes |
 |---|---|---|
-| `/taste-brief` | The idea and its tension, a mood board if ambiguous, brand tokens in brand mode | `style/brief.md`, `style/references/`, `style/assets/` |
-| `/taste-directions` | Two or three directions, and asks which you like most | `style/directions.html` |
+| `/taste-brief` | The idea and its tension; stops to ask if the idea is thin | `style/brief.md`, `style/references/`, `style/assets/` |
+| `/taste-directions` | Two or three directions with a signature move; one pick | `style/directions.html` |
 | `/taste-why` | Writes the handbook, with the reviewer on every decision | `STYLE.md` |
-| `/taste-validate` | Measures any page and captures it | `style/validate/<page>/` |
+| `/taste-validate` | Measures any page, captures it, then looks (no score) | `style/validate/<page>/` |
 
 ## Developing
 

@@ -40,6 +40,35 @@ variant "$tmp/onq.md" "kept (Q2)"
 check "why-lint: kept on a missing answer fails" "python3 $s/why-lint.py $tmp/onq.md | grep -q 'has no Q2'"
 variant "$tmp/onq-ok.md" "kept (Q2)" "- **Q2:** which lettering, rough or smooth? Answer: smooth."
 check "why-lint: kept on a recorded answer passes" "python3 $s/why-lint.py $tmp/onq-ok.md"
+check "why-lint: inherit-only why fails off brand" "python3 $s/why-lint.py $f/inherit-STYLE.md | grep -q 'source already did it'"
+check "why-lint: inherit-only why is allowed in brand mode" "python3 $s/why-lint.py $f/inherit-brand-STYLE.md"
+python3 - "$f/good-STYLE.md" "$tmp/sixq.md" <<'PY'
+import sys
+src, out = sys.argv[1:]
+text = open(src).read()
+qs = "\n".join("- **Q%s:** q%s? Answer: a." % (i, i) for i in range(1, 7))
+text = text.replace("## Tokens", "## Questions asked\n" + qs + "\n\n## Tokens")
+open(out, "w").write(text)
+PY
+check "why-lint: six questions are allowed" "python3 $s/why-lint.py $tmp/sixq.md"
+python3 - "$f/good-STYLE.md" "$tmp/sevenq.md" <<'PY'
+import sys
+src, out = sys.argv[1:]
+text = open(src).read()
+qs = "\n".join("- **Q%s:** q%s? Answer: a." % (i, i) for i in range(1, 8))
+text = text.replace("## Tokens", "## Questions asked\n" + qs + "\n\n## Tokens")
+open(out, "w").write(text)
+PY
+check "why-lint: seven questions fail" "python3 $s/why-lint.py $tmp/sevenq.md | grep -q 'limit is 6'"
+python3 - "$f/good-STYLE.md" "$tmp/thinsig.md" <<'PY'
+import sys
+text = open(sys.argv[1]).read().replace(
+    "A bookish serif on warm paper, like a printed almanac, with one coral action the colour of a harbor buoy. Display type is clearly larger than the tables. Charts and marks stay whole; they are not cropped to silence overflow.",
+    "Serif.",
+)
+open(sys.argv[2], "w").write(text)
+PY
+check "why-lint: a thin signature fails" "python3 $s/why-lint.py $tmp/thinsig.md | grep -q 'Signature is too thin'"
 
 bash $s/read-tokens.sh $f/brand.html "$tmp/x" >"$tmp/read.log" 2>&1
 check "read-tokens: runs" "test -s $tmp/x/tokens.json && test -s $tmp/x/page-1440.png && test -s $tmp/x/page-375.png"
@@ -97,6 +126,9 @@ A small page for testing the build order, with a dark ink on a pale ground.
 
 ## Principles
 - Plain, not decorated.
+
+## Signature
+Dark ink on pale ground, title clearly larger than body, no picture to crop.
 
 ## Decisions
 
